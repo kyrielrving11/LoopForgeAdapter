@@ -1,0 +1,43 @@
+{
+  "name": "loopforge-adapter",
+  "version": "0.1.0",
+  "description": "Run LoopForge through Claude Code with explicit invocation boundaries",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kyrielrving11/LoopForgeAdapter.git"
+  },
+  "homepage": "https://github.com/kyrielrving11/LoopForgeAdapter#readme",
+  "bugs": {
+    "url": "https://github.com/kyrielrving11/LoopForgeAdapter/issues"
+  },
+  "keywords": ["loopforge", "claude-code", "mcp", "coding-agent"],
+  "files": [
+    "dist/src/",
+    "README.md",
+    "docs/",
+    "LICENSE"
+  ],
+  "type": "module",
+  "bin": {
+    "loopforge-adapter": "dist/src/cli.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "clean": "node -e \"require('node:fs').rmSync('dist', { recursive: true, force: true })\"",
+    "build": "npm run clean && tsc -p tsconfig.json",
+    "test": "npm run build && node --test dist/test/*.test.js",
+    "test:e2e": "npm run build && node --test dist/test/e2e/*.test.js",
+    "test:claude": "npm run build && node --test dist/test/e2e/claude-runtime.test.js",
+    "prepack": "npm run build"
+  },
+  "dependencies": {
+    "node-pty": "^1.1.0"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.6",
+    "typescript": "^7.0.2"
+  }
+}
