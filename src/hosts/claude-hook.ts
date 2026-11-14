@@ -1,4 +1,4 @@
-import { callClaudeLifecycleHook, type ClaudeHookInput } from "./claude-lifecycle.js";
+import { callClaudeLifecycleHook, claudePromptHash, type ClaudeHookInput } from "./claude-lifecycle.js";
 import { HOST_ADMISSION_FIELD } from "../host/contracts.js";
 
 async function run(): Promise<void> {
@@ -10,7 +10,7 @@ async function run(): Promise<void> {
     body += String(chunk);
     if (body.length > 1024 * 1024) throw new Error("Claude hook input is too large");
   }
-  const raw = JSON.parse(body) as ClaudeHookInput & { tool_input?: Record<string, unknown>; tool_response?: Record<string, unknown> };
+  const raw = JSON.parse(body) as ClaudeHookInput & { prompt?: unknown; tool_input?: Record<string, unknown>; tool_response?: Record<string, unknown> };
   // Deliberately do not forward transcript_path, tool inputs, tool outputs,
   // prompts, or any other content in Claude's hook envelope.
   const input: ClaudeHookInput = {
@@ -22,6 +22,8 @@ async function run(): Promise<void> {
     ...(raw.tool_name === undefined ? {} : { tool_name: raw.tool_name }),
     ...(raw.tool_use_id === undefined ? {} : { tool_use_id: raw.tool_use_id }),
     ...(raw.agent_id === undefined ? {} : { agent_id: raw.agent_id }),
+    ...(raw.hook_event_name === "UserPromptSubmit" && typeof raw.prompt === "string"
+      ? { promptHash: claudePromptHash(raw.prompt) } : {}),
     background: (["Bash", "PowerShell", "Agent", "Task"].includes(raw.tool_name ?? "") &&
       (raw.tool_input?.run_in_background === true || raw.tool_input?.isolation === "remote")) ||
       raw.tool_response?.isAsync === true || raw.tool_response?.status === "async_launched" ||

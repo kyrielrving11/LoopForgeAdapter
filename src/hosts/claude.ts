@@ -6,6 +6,7 @@ import { promisify } from "node:util";
 import { createRequire } from "node:module";
 import { fileURLToPath } from "node:url";
 import { ClaudeRuntime } from "./claude-runtime.js";
+import { captureFixedCapabilities } from "./fixed-capabilities.js";
 import type {
   HostCapabilities,
   HostDriver,
@@ -51,6 +52,8 @@ interface ClaudeDriverOptions {
   readCliVersion?: (executable: string) => Promise<string>;
   /** Use native session hooks to confirm /clear before reusing a process. */
   reuseProcess?: boolean;
+  /** Explicit static skill/tool documentation to supply to every fresh model conversation. */
+  capabilityFiles?: readonly string[];
   lifecycleTimeoutMs?: number;
 }
 
@@ -137,6 +140,7 @@ export class ClaudeCodeDriver implements HostDriver {
   private readonly readCliHelp: (executable: string) => Promise<string>;
   private readonly readCliVersion: (executable: string) => Promise<string>;
   private readonly reuseProcess: boolean;
+  private readonly capabilityFiles: readonly string[];
   private readonly lifecycleTimeoutMs: number;
   private runtime: ClaudeRuntime | undefined;
 
@@ -151,6 +155,7 @@ export class ClaudeCodeDriver implements HostDriver {
     );
     this.bridgeServerName = options.bridgeServerName ?? "loopforge-adapter";
     this.reuseProcess = options.reuseProcess ?? false;
+    this.capabilityFiles = (options.capabilityFiles ?? []).map((file) => path.resolve(file));
     this.lifecycleTimeoutMs = options.lifecycleTimeoutMs ?? 15000;
     this.readCliHelp = options.readCliHelp ?? (async (executable) => {
       const result = await execFileAsync(executable, ["--help"], {
@@ -166,6 +171,7 @@ export class ClaudeCodeDriver implements HostDriver {
   }
 
   async probe(): Promise<HostCapabilities> {
+    captureFixedCapabilities(this.capabilityFiles);
     const installed = this.executable.includes(path.sep) ? existsSync(this.executable) : true;
     let ptyAvailable = false;
     try {
@@ -182,6 +188,9 @@ export class ClaudeCodeDriver implements HostDriver {
       try { version = await this.readCliVersion(this.executable); } catch { version = ""; }
     }
     const supports = (option: string) => help.includes(option);
+    if (this.capabilityFiles.length && !supports("--append-system-prompt-file") && !supports("--append-system-prompt[-file]")) {
+      throw new Error("Fixed capability background requires Claude --append-system-prompt-file support");
+    }
     // Environment switches are silently ignored by older hosts. Do not claim
     // isolation from flag support alone; 2.1.323 is the verified baseline.
     const parsedVersion = version.match(/^(\d+)\.(\d+)\.(\d+)/);
@@ -194,6 +203,7 @@ export class ClaudeCodeDriver implements HostDriver {
       cleanConversation: installed && ptyAvailable && supports("--session-id") && lifecycleAvailable,
       interactiveTransport: installed && ptyAvailable,
       roundMetadataDelivery: installed && ptyAvailable && lifecycleAvailable,
+      promptDeliveryConfirmation: installed && ptyAvailable && supports("--session-id") && lifecycleAvailable,
       hardStop: installed && ptyAvailable,
       workspaceContinuity: true,
       toolResultInterception: installed && ptyAvailable && bridgeAvailable &&
@@ -224,6 +234,7 @@ export class ClaudeCodeDriver implements HostDriver {
       executable: this.executable, platform: this.platform, ptyFactory: this.ptyFactory,
       stopProcessTree: this.stopTree, timeoutMs: this.lifecycleTimeoutMs,
       mcpConfigPath: preparedMcp.path, bridgeServerName,
+      capabilityFiles: this.capabilityFiles,
       cleanup: preparedMcp.cleanup,
     });
     this.runtime = runtime;
@@ -247,17 +258,18 @@ export class ClaudeCodeDriver implements HostDriver {
     const runtime = this.runtime;
     if (!runtime?.owns(handle)) throw new Error("Claude invocation handle is inactive");
     runtime.assertReplacement(handle, input);
-    if (this.reuseProcess) {
+    if (this.reuseProcess && runtime.hasCurrentCapabilities()) {
       try { return await runtime.replace(handle, input); }
       catch {
-        // A failed or missing clear acknowledgement never authorizes a new
-        // prompt in the old process. Confirm its exit, then launch cold.
-        runtime.report("Claude session reset was not confirmed; restarting the host and its MCP connections.");
+        // Failed session/prompt confirmation never authorizes more work in
+        // this process. Confirm its exit before redelivering from cold.
+        runtime.report("Claude session or prompt delivery was not confirmed; restarting the host and its MCP connections.");
         await runtime.stop("adapter_error");
         this.runtime = undefined;
         return this.startInvocation(input);
       }
     }
+    if (this.reuseProcess) runtime.report("Fixed capability sources changed or became unreadable; restarting the host before delivering the next input.");
     await this.stopInvocation(handle, "fresh_invocation");
     return this.startInvocation(input);
   }

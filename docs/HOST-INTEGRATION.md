@@ -7,7 +7,8 @@ does not define a second protocol or duplicate LoopForge field meanings.
 ## Capability checks
 
 Automatic operation requires clean conversation creation, interactive
-transport, round metadata delivery, hard stop, workspace continuity and
+transport, round metadata delivery, exact initial prompt confirmation
+(`promptDeliveryConfirmation`), hard stop, workspace continuity and
 tool-result interception. The supervisor refuses to start if a required
 capability is absent.
 
@@ -27,6 +28,22 @@ The supervisor's LoopForge MCP process remains separate and alive during
 ordinary invocation replacement in either mode. Reuse does not promise that
 an external server will never disconnect or reset its internal state.
 `providerCacheTelemetry` is false: no provider cache metric is collected.
+
+The `SessionStart` hook returns a fixed host-boundary note. Dynamic LoopForge
+metadata remains in the supervisor for routing and is not copied into model
+context; the current prompt and live MCP schema carry the authoritative round
+facts and boundary. This keeps hook context stable across rounds and prevents
+submission handles, session IDs, guidance and arbitrary extension fields from
+becoming a second model-facing source.
+
+Before a startup or replacement invocation becomes ready, its current-session
+`UserPromptSubmit` hook must report the exact expected UTF-8 prompt digest.
+Tools remain denied until it matches. Session readiness alone is insufficient;
+missing, changed or timed-out delivery fails closed. Reuse can retry from a
+new host only after confirmed exit. This confirms hook-observed input, not
+provider receipt or model comprehension. The digest is volatile transport
+state and never enters LoopForge history. Ordinary later operator messages
+remain possible. See [architecture](./ARCHITECTURE.md) for the state boundary.
 
 ## Launch settings
 
@@ -80,10 +97,41 @@ hooks. The adapter does not bypass administrator policy.
   paths where needed; the input configuration file is not edited.
 
 The available skill catalog and tool services can remain accessible across
-fresh invocations. Expanded skill text, previous tool outputs and implicit
-model habits are not carried into the next conversation by the adapter.
+fresh invocations. Previously expanded skill text is not replayed from
+history. Previous tool outputs and implicit model habits are not carried
+into the next conversation by the adapter.
+
+## Explicit fixed capability background
+
+`--capability-file FILE` selects original UTF-8 capability documents, in order,
+for native `--append-system-prompt-file` delivery. This option is independent
+of LoopForge input and ordinary skill discovery. The full rendered background
+is bounded at 64 KiB, with no silent truncation. The driver probes the native
+flag and validates sources before the supervisor starts/resumes LoopForge.
+
+Source files remain authoritative. A content-addressed snapshot is held only
+in the runtime's temporary directory, without round history or a learned
+profile. Before a fresh replacement, sources are reread: unchanged content
+permits reuse; a changed/unreadable source requires confirmed host exit and a
+new capture. Invalid sources prevent the next host from starting. An active
+conversation keeps its launch snapshot until LoopForge requests a fresh one.
+
+Native tests inspect the first provider request of both fresh modes and
+confirm full source text plus clean previous tool history. This proves
+reference availability, not automatic skill activation, preservation of
+native invocation side effects, or real-model avoidance of rereads. The
+adapter does not rewrite document-relative paths or replace live tool
+schemas. See the [user guide](./USER-GUIDE.md#fixed-capability-references)
+for configuration and context-cost limits.
 
 ## Limits and validation
+
+The current invocation's main-Agent `Stop` and `StopFailure` hooks emit a
+content-free `turn_ended` event. Child or stale-session hooks cannot end the
+current turn, and this signal never clears execution ownership or declares a
+LoopForge result. The CLI keeps interactive input available; without a TTY,
+it requests a pause and exits nonzero. API retries stay under native Claude
+control. These events cannot detect a still-running request or hung process.
 
 Clean context means a new model conversation. Static host instructions such
 as `CLAUDE.md`, installed skills and workspace files may still be available.
@@ -96,10 +144,23 @@ Provider KV/prefix caches are controlled by the provider and Claude. Process
 reuse is neither evidence of a cache hit nor a guarantee of token savings.
 The adapter does not depend on those caches for clean-session correctness.
 
+A separate [Claude/DeepSeek experiment](./CLAUDE-CACHE-EXPERIMENT.zh-CN.md)
+measured cache reuse across native clean sessions after stabilizing the
+provider's user isolation identity and omitting Claude's attribution block.
+This is experimental forwarding code outside the production driver. Ordinary
+start/resume still forwards native provider identity unchanged and collects
+no usage telemetry. Do not describe the experiment as a shipped runtime feature.
+
 The recorded native validation environment is Windows, Node.js 24.16.0 and
 Claude Code 2.1.323, with a local scripted Anthropic-compatible endpoint.
 The runtime declares Node.js >=18. Linux/macOS and other Node/CLI versions
 need their own acceptance run; they are not certified by this Windows run.
+
+The dated live cache, workload and reliability records under `experiments/`
+were collected on 2026-11-13, before the fixed host-context projection was
+added. They remain historical evidence for those exact runs; they do not
+measure the current model-visible metadata boundary or certify current-version
+cache behavior. See the [experiment index](./EXPERIMENTS.zh-CN.md).
 
 On Windows, `node-pty` may print an `AttachConsole failed` helper warning
 during teardown. It has occurred with successful tests and confirmed host

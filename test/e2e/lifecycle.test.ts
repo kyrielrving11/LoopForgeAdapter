@@ -56,6 +56,7 @@ const capabilities: HostCapabilities = {
   cleanConversation: true,
   interactiveTransport: true,
   roundMetadataDelivery: true,
+  promptDeliveryConfirmation: true,
   hardStop: true,
   workspaceContinuity: true,
   toolResultInterception: true,

@@ -1,0 +1,44 @@
+{
+  "measuredAt": "2026-11-13T13:24:37.948Z",
+  "mode": "local-scripted-no-cost-measurement",
+  "stableUser": true,
+  "fault": "end-turn",
+  "passed": false,
+  "failure": "Claude turn ended without submitting task 0: response_completed",
+  "elapsedMs": 3629,
+  "artificialRoundDelayMs": 0,
+  "hostStarts": 1,
+  "mcpStarts": 1,
+  "nativeSessionHashes": [],
+  "checks": [],
+  "serviceErrors": [],
+  "serviceEvents": [
+    {
+      "kind": "start"
+    }
+  ],
+  "finalSourceHash": "ecf5bd52f0c58370c7592d317783b884e6c440f96a3884ae0efbe300e07c3922",
+  "measurements": [
+    {
+      "round": 0,
+      "firstRequest": true,
+      "systemHash": "d4015d80c916755c1778036079263cfb118e56208ddef3be5dc2904b2b3a2c88",
+      "toolsHash": "7d3d2258c9baea8eef71e7c5a85b5ab6d942446cc48f8345a4ff4d772e56af64",
+      "nativeUserHash": "e3c95a9611360ccf4bdb816ff947def92b43b233e2551094e8cceee131c708ca",
+      "previousPromptAbsent": true,
+      "previousToolResultAbsent": true,
+      "oldSkillBodyAbsent": true,
+      "currentToolResultPresent": false,
+      "toolErrors": [],
+      "toolResults": [],
+      "fixedReferencePresent": true,
+      "status": 200,
+      "elapsedMs": 9,
+      "firstContentMs": null,
+      "usage": null,
+      "complete": true,
+      "stopReason": "end_turn",
+      "toolNames": []
+    }
+  ]
+}

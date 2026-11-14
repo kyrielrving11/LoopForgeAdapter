@@ -9,9 +9,10 @@ without a learned profile or independent history store.
 
 Use Node.js >=18, an interactive terminal, a complete local Claude Code
 >=2.1.323 installation and a separately installed or built LoopForge runtime.
-The recorded acceptance baseline is Windows, Node.js 24.16.0, Claude Code
-2.1.323 and LoopForge 4.0.7. Other versions and Linux/macOS require their own
-native acceptance run. Version checks alone do not certify future releases.
+The recorded native acceptance baseline is Windows, Node.js 24.16.0, Claude
+Code 2.1.323 and LoopForge 4.0.7. Other LoopForge releases, host versions and
+Linux/macOS require their own native acceptance run. Version checks alone do
+not certify future releases.
 
 Run `claude` directly in the target workspace first to complete authentication,
 provider setup and trust. Provider environment is inherited. DeepSeek users
@@ -58,14 +59,26 @@ preserved across context changes. The agent submits its own round evaluation;
 field meaning comes from LoopForge's live schemas, prompt and
 `submission_guidance`, not an adapter copy.
 
+The prompt and live MCP schemas are the model's authority for round facts.
+Structured LoopForge metadata stays in the adapter's volatile routing path;
+the model receives a fixed host note that contains no round IDs, submission
+handles, guidance or dynamic boundary labels.
+
 Record the printed `LoopForge loop: <id>`. Ctrl+C requests host shutdown and a
 LoopForge pause; check the returned pause result. Resume in the same workspace:
+
+A native `Stop` or `StopFailure` means a Claude turn ended, not that the
+LoopForge round completed. If the round remains open, an interactive terminal
+shows a diagnostic and lets you continue. Without an interactive terminal,
+the CLI stops the host, requests a LoopForge pause and returns exit code 1.
+It never invents a continuation, submission or round advance. Claude still
+owns API retry timing; `StopFailure` arrives after those retries end.
 
 ```powershell
 loopforge-adapter resume --workspace "C:\work\my-project" --loop-id loop-... --claude-runtime reuse
 ```
 
-Supply the same `--loopforge-cli` and `--mcp-config` again if required.
+Supply the same `--loopforge-cli`, `--mcp-config` and `--capability-file` options again if required.
 The CLI defaults to `invocationLost: true`, letting LoopForge reconstruct
 the current invocation. It does not resume a Claude transcript or need an
 adapter state file. After an abrupt exit, LoopForge still decides lease and
@@ -82,11 +95,63 @@ A failed clear falls back to restart only after confirmed exit. Missing exit
 confirmation blocks further delivery. An external MCP server can still
 disconnect or reset itself; reuse does not guarantee its availability.
 
+Both modes also wait for the current session's `UserPromptSubmit` hook to
+confirm the exact prompt digest before declaring readiness or permitting
+tools. Whitespace and newlines are not normalized. A missing or different
+receipt fails closed; reuse can fall back to a confirmed host restart. The
+digest is volatile and never becomes LoopForge history. This checks input
+observed by the hook, not provider receipt or model understanding.
+
 `same_round_retry` is delivered inside the current conversation.
 `fresh_invocation` creates a new one, which may still represent the same
 logical round. LoopForge decides these boundaries. Host reuse preserves
 services and skill availability, not prior dialogue, tool outputs, expanded
 skill bodies, implicit habits or guaranteed provider KV/prefix cache hits.
+Explicitly selected reference text can be supplied separately as described below.
+
+## Fixed capability references
+
+For a small set of skill/tool instructions needed throughout a run, explicitly
+select the original UTF-8 documents. This is optional and disabled by default:
+
+```powershell
+loopforge-adapter start --workspace "C:\work\my-project" --task "Implement the requested change" --claude-runtime reuse --capability-file "C:\skills\review\SKILL.md" --capability-file "C:\tools\usage.md"
+```
+
+`--capability-file` is repeatable and works with start, resume and exact JSON
+input. Relative paths resolve from the adapter launch directory, not from
+`--workspace`. Documents retain their input order; paths resolving to the same
+source are included once. Choose static capability instructions, not previous
+task reports, tool outputs or a competing task plan. Unselected skills remain
+available through ordinary native skill loading.
+
+The adapter validates nonempty UTF-8 text and supplies the full original text,
+source paths and content hashes through Claude's native
+[`--append-system-prompt-file`](https://code.claude.com/docs/en/cli-reference).
+The complete rendered background, including labels, must fit within 64 KiB;
+invalid, missing or oversized sources fail instead of being skipped or
+truncated. A temporary derived file is removed after confirmed shutdown;
+the originals are never modified and there is no adapter memory store.
+
+At each `fresh_invocation`, the adapter rereads source fingerprints. Unchanged
+sources permit ordinary `/clear` reuse. A changed or unreadable source requires
+confirmed old-host exit; a new host captures the current originals. If sources
+remain invalid, no next invocation starts. Edits do not alter an invocation
+already in progress or cause the adapter to invent a round boundary.
+
+Native acceptance checks both modes: the first model request after a fresh
+boundary already contains the selected full text, while previous prompt,
+dynamic LoopForge metadata and dynamic tool results are absent. The controlled fixture needs
+no Skill/Read call to recover those references. A real model may still choose
+to read them. Preloading a `SKILL.md` is reference access, not native skill
+activation: permissions, hooks, supporting files and explicit invocations
+still follow Claude's live interfaces. Relative references inside a document
+are not rewritten, and live MCP/tool schemas remain authoritative.
+
+The reference still occupies model context on every fresh conversation. A
+stable background does not prove a provider cache hit, retained understanding,
+token savings or better task performance. These need separate measurements;
+the adapter does not preserve previous dialogue or learn implicit habits.
 
 ## Ordinary MCP servers
 
@@ -151,6 +216,7 @@ Use `loopforge-adapter help` or root `--help`. `start --help` is not supported.
 | `--workspace DIR` | Target workspace; defaults to cwd |
 | `--claude-runtime restart\|reuse` | Host mode; defaults to restart |
 | `--mcp-config FILE` | Explicit ordinary MCP configuration |
+| `--capability-file FILE` | Repeatable original UTF-8 capability references; 64 KiB total rendered limit |
 | `--loopforge-cli FILE` | Built LoopForge `dist/cli.js` entrypoint |
 | `--loopforge-command COMMAND`, `--loopforge-arg ARG` | Custom command and repeatable prefix arguments; use instead of the CLI entrypoint option |
 | `--input-json JSON`, `--input-file FILE` | Exact start/resume object; choose one |
@@ -186,3 +252,9 @@ terminal looks cleared. Inspect host diagnostics, then recover through
 LoopForge. On Windows, `node-pty` may print `AttachConsole failed` during
 teardown; it has occurred with confirmed host exits and passing tests.
 Missing exit confirmation still blocks continuation.
+
+`Claude submitted prompt does not match` or a prompt delivery confirmation
+timeout means the pending LoopForge input was not confirmed. Do not continue
+in that session or manually trim the prompt to bypass it; use the supported
+restart/recovery path. The same-round retry delivery remains ordinary MCP
+tool-result forwarding and is not covered by the startup prompt receipt.

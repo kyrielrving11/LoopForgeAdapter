@@ -9,6 +9,7 @@ const REQUIRED_AUTOMATIC_CAPABILITIES: Array<keyof HostCapabilities> = [
   "cleanConversation",
   "interactiveTransport",
   "roundMetadataDelivery",
+  "promptDeliveryConfirmation",
   "hardStop",
   "workspaceContinuity",
   "toolResultInterception",

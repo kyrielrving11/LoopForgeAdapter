@@ -5,9 +5,11 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import type { HostEvent, InvocationHandle, InvocationInput, InvocationStopReason } from "../host/contracts.js";
 import type { PtyFactory, PtyProcess, StopProcessTree } from "./claude.js";
-import { ClaudeLifecycleServer, type ClaudeHookInput } from "./claude-lifecycle.js";
+import { ClaudeLifecycleServer, claudePromptHash, type ClaudeHookInput } from "./claude-lifecycle.js";
 import { claudeIsolation, exposeClaudeSkills } from "./claude-isolation.js";
 import { ClaudeExecutionBoundary } from "./claude-execution.js";
+import { captureFixedCapabilities, type FixedCapabilityBackground } from "./fixed-capabilities.js";
+import { renderClaudeHostContext } from "./claude-metadata.js";
 
 class ClaudeInvocation implements InvocationHandle {
   readonly invocationId = randomUUID();
@@ -52,6 +54,13 @@ interface ExpectedSession {
   reject(error: Error): void;
 }
 
+interface ExpectedPromptDelivery {
+  hash: string;
+  arm(): void;
+  resolve(): void;
+  reject(error: Error): void;
+}
+
 interface ClaudeRuntimeOptions {
   executable: string;
   platform: NodeJS.Platform;
@@ -60,6 +69,7 @@ interface ClaudeRuntimeOptions {
   timeoutMs: number;
   mcpConfigPath: string | undefined;
   bridgeServerName: string;
+  capabilityFiles: readonly string[];
   cleanup(): void;
 }
 
@@ -75,6 +85,7 @@ export class ClaudeRuntime {
   private terminal: PtyProcess | undefined;
   private active: ClaudeInvocation | undefined;
   private expected: ExpectedSession | undefined;
+  private delivery: ExpectedPromptDelivery | undefined;
   private workspace = "";
   private directory: string | undefined;
   private exited = false;
@@ -83,19 +94,25 @@ export class ClaudeRuntime {
   private stopping: Promise<void> | undefined;
   private retiring = false;
   private execution: ClaudeExecutionBoundary | undefined;
+  private fixedCapabilities: FixedCapabilityBackground | undefined;
 
   constructor(private readonly options: ClaudeRuntimeOptions) {}
 
   owns(handle: InvocationHandle): boolean { return this.handles.has(handle); }
   isCurrent(handle: InvocationHandle): boolean { return handle === this.active; }
 
+  hasCurrentCapabilities(): boolean {
+    try { return captureFixedCapabilities(this.options.capabilityFiles)?.fingerprint === this.fixedCapabilities?.fingerprint; }
+    catch { return false; }
+  }
+
   beginToolCall(name: string, admission?: string): () => void {
-    if (this.expected || this.retiring || this.exited || !this.execution) throw new Error("Claude invocation is inactive");
+    if (this.expected || this.delivery || this.retiring || this.exited || !this.execution) throw new Error("Claude invocation is inactive or prompt delivery is unconfirmed");
     return this.execution.begin(name, admission);
   }
 
   assertReplacement(handle: InvocationHandle, input: InvocationInput): void {
-    if (handle !== this.active || this.expected || this.exited || this.retiring) throw new Error("Claude invocation cannot be replaced");
+    if (handle !== this.active || this.expected || this.delivery || this.exited || this.retiring) throw new Error("Claude invocation cannot be replaced");
     if (path.resolve(input.workspace) !== this.workspace) throw new Error("Claude runtime cannot change workspace");
     if (!this.execution?.canReplace()) throw new Error("Claude execution has not drained before replacement");
   }
@@ -103,6 +120,7 @@ export class ClaudeRuntime {
   async start(input: InvocationInput): Promise<InvocationHandle> {
     this.workspace = path.resolve(input.workspace);
     try {
+      this.fixedCapabilities = captureFixedCapabilities(this.options.capabilityFiles);
       const isolation = claudeIsolation(this.workspace, input.env);
       const endpoint = await this.lifecycle.listen((event) => this.hook(event));
       this.directory = mkdtempSync(path.join(os.tmpdir(), "loopforge-claude-runtime-"));
@@ -115,9 +133,16 @@ export class ClaudeRuntime {
         PreToolUse: [{ hooks: [hook] }], UserPromptSubmit: [{ hooks: [hook] }],
         PostToolUse: [{ hooks: [hook] }], PostToolUseFailure: [{ hooks: [hook] }], PermissionDenied: [{ hooks: [hook] }],
         SubagentStart: [{ hooks: [hook] }], SubagentStop: [{ hooks: [hook] }],
+        Stop: [{ hooks: [hook] }], StopFailure: [{ hooks: [hook] }],
       } }), { mode: 0o600 });
       const ready = this.expect("startup", input.metadata);
+      const delivered = this.expectPrompt(input.prompt);
       const args = ["--session-id", randomUUID(), "--settings", settings, "--setting-sources", "", "--strict-mcp-config", "--disallowedTools=Monitor,CronCreate"];
+      if (this.fixedCapabilities) {
+        const backgroundPath = path.join(this.directory, "fixed-capabilities.md");
+        writeFileSync(backgroundPath, this.fixedCapabilities.text, { mode: 0o600 });
+        args.push("--append-system-prompt-file", backgroundPath);
+      }
       const skills = exposeClaudeSkills(this.directory, this.workspace, isolation.env, isolation.pluginIds);
       for (const skillPlugin of skills) args.push(`--plugin-dir=${skillPlugin}`);
       if (this.options.mcpConfigPath) args.push(`--mcp-config=${this.options.mcpConfigPath}`);
@@ -131,10 +156,13 @@ export class ClaudeRuntime {
       this.terminal.onExit(({ exitCode }) => {
         this.exited = true;
         this.expected?.reject(new Error("Claude process exited before session confirmation"));
+        this.delivery?.reject(new Error("Claude process exited before prompt delivery confirmation"));
         this.active?.finish(exitCode);
         this.exitResolve();
       });
-      return await ready;
+      const invocation = await ready;
+      await delivered;
+      return invocation;
     } catch (error) {
       await this.stop("adapter_error");
       throw error;
@@ -146,6 +174,7 @@ export class ClaudeRuntime {
     const old = this.active!;
     old.suspend();
     const ready = this.expect("clear", input.metadata, old.sessionId);
+    const delivered = this.expectPrompt(input.prompt);
     // These short input-delivery gaps are not evidence of a reset. Only the
     // matching SessionEnd(clear) + SessionStart(clear, new id) authorize it.
     this.terminal!.write("\u001b");
@@ -155,10 +184,11 @@ export class ClaudeRuntime {
     this.terminal!.write("\r");
     const next = await ready;
     old.finish(0, "fresh_invocation");
-    next.push({ type: "diagnostic", message: `Reused Claude process ${next.pid}; confirmed a new session ${next.sessionId}.` });
     this.terminal!.write(`\u001b[200~${input.prompt}\u001b[201~`);
     await new Promise((resolve) => setTimeout(resolve, 100));
     this.terminal!.write("\r");
+    await delivered;
+    next.push({ type: "diagnostic", message: `Reused Claude process ${next.pid}; confirmed a new session ${next.sessionId} and exact prompt delivery.` });
     return next;
   }
 
@@ -174,6 +204,8 @@ export class ClaudeRuntime {
     this.active?.push({ type: "stopping", reason });
     this.expected?.reject(new Error("Claude runtime stopped"));
     this.expected = undefined;
+    this.delivery?.reject(new Error("Claude runtime stopped before prompt delivery confirmation"));
+    this.delivery = undefined;
     const terminal = this.terminal;
     if (terminal && !this.exited) {
       try { await this.options.stopProcessTree(terminal.pid); }
@@ -212,6 +244,28 @@ export class ClaudeRuntime {
     return promise;
   }
 
+  private expectPrompt(prompt: string): Promise<void> {
+    const promise = new Promise<void>((resolve, reject) => {
+      let timer: ReturnType<typeof setTimeout> | undefined;
+      const delivery: ExpectedPromptDelivery = {
+        hash: claudePromptHash(prompt),
+        arm: () => {
+          timer ??= setTimeout(() => delivery.reject(new Error("Claude prompt delivery confirmation timed out")), this.options.timeoutMs);
+        },
+        resolve: () => { clearTimeout(timer); resolve(); },
+        reject: (error) => {
+          clearTimeout(timer);
+          this.retiring = true;
+          this.active?.suspend();
+          reject(error);
+        },
+      };
+      this.delivery = delivery;
+    });
+    void promise.catch(() => undefined);
+    return promise;
+  }
+
   private hook(event: ClaudeHookInput): Record<string, unknown> {
     const expected = this.expected;
     const correctWorkspace = path.resolve(event.cwd) === this.workspace;
@@ -224,7 +278,7 @@ export class ClaudeRuntime {
       return {};
     }
     if (event.hook_event_name === "SessionStart") {
-      if (!expected && correctWorkspace && event.source === "compact" && event.session_id === this.active?.sessionId) return {};
+      if (!expected && !this.delivery && correctWorkspace && event.source === "compact" && event.session_id === this.active?.sessionId) return {};
       const valid = correctWorkspace && expected && event.source === expected.source &&
         (expected.source === "startup" || (expected.ended && event.session_id !== expected.previousSessionId));
       if (!valid || !this.terminal) return { continue: false, stopReason: "Unexpected Claude session boundary" };
@@ -233,16 +287,34 @@ export class ClaudeRuntime {
       this.active = invocation;
       this.execution = new ClaudeExecutionBoundary(this.options.bridgeServerName);
       this.expected = undefined;
+      this.delivery!.arm();
       invocation.push({ type: "started", pid: invocation.pid, sessionId: invocation.sessionId });
       expected.resolve(invocation);
       return { hookSpecificOutput: {
         hookEventName: "SessionStart",
-        additionalContext: `LoopForge invocation metadata (transport context; preserve values exactly): ${JSON.stringify(expected.metadata)}`,
+        additionalContext: `LoopForge host context (transport boundary only; current prompt and live MCP schema are authoritative): ${renderClaudeHostContext(expected.metadata)}`,
       } };
     }
     // Tool cwd may change during a session. Session identity, not tool cwd,
     // owns execution; workspace identity is checked at SessionStart.
     if (!expected && !this.retiring && event.session_id === this.active?.sessionId) {
+      if (event.hook_event_name === "UserPromptSubmit" && this.delivery) {
+        if (event.promptHash !== this.delivery.hash) {
+          this.delivery.reject(new Error("Claude submitted prompt does not match the pending LoopForge prompt"));
+          return { decision: "block", reason: "LoopForge prompt delivery did not match; no action was authorized" };
+        }
+        const delivery = this.delivery;
+        this.delivery = undefined;
+        delivery.resolve();
+        return {};
+      }
+      if (this.delivery && event.hook_event_name === "PreToolUse") return { hookSpecificOutput: {
+        hookEventName: "PreToolUse", permissionDecision: "deny", permissionDecisionReason: "LoopForge prompt delivery is unconfirmed",
+      } };
+      if (!this.delivery && !event.agent_id && ["Stop", "StopFailure"].includes(event.hook_event_name)) {
+        this.active?.push({ type: "turn_ended", reason: event.hook_event_name === "Stop" ? "response_completed" : "api_error" });
+        return {};
+      }
       if (event.hook_event_name === "PreToolUse") return this.execution!.preTool(event);
       this.execution!.observe(event);
       return {};

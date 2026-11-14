@@ -14,8 +14,9 @@ a second history store.
 
 Requirements: Node.js >=18, a working local Claude Code >=2.1.323 installation,
 an interactive terminal and a separately installed/built LoopForge runtime.
-The validated environment is Windows with Node.js 24.16.0, Claude Code
-2.1.323 and the LoopForge 4.0.7 checkout. Other platforms require validation.
+The recorded native acceptance baseline is Windows with Node.js 24.16.0,
+Claude Code 2.1.323 and a LoopForge 4.0.7 checkout. Other LoopForge releases
+and platforms require their own validation.
 
 Clone the repository, then install and build:
 
@@ -48,10 +49,24 @@ Choose reuse with `--claude-runtime reuse`. A failed clear falls back to a
 confirmed host restart. `same_round_retry` stays in the current invocation;
 LoopForge alone decides when a fresh invocation is required.
 
+Startup and replacement also wait for Claude's `UserPromptSubmit` hook to
+confirm the exact prompt digest. Tools stay closed until confirmation; a
+missing or mismatched receipt cannot silently complete delivery. The digest
+is kept only in memory and does not enter LoopForge history.
+
 The workspace and installed skill files remain available. Previous dialogue,
-tool outputs and uncommitted reasoning are not replayed. Necessary round
-information comes from LoopForge's current prompt and metadata. Host reuse
+tool outputs and uncommitted reasoning are not replayed. Round facts come from
+LoopForge's current prompt and live schemas. The adapter keeps structured
+metadata for routing but exposes only a fixed host-boundary note to the model;
+handles, IDs and dynamic round metadata are not replayed as memory. Host reuse
 does not preserve implicit model habits or guarantee KV/prefix cache hits.
+
+For selected static skill/tool documentation, repeat `--capability-file FILE`.
+Claude receives the original text as fixed system background in each fresh
+conversation. Sources stay authoritative; edited sources trigger a confirmed
+host restart at the next fresh boundary, even in reuse mode. This optional
+preload is limited to 64 KiB total, consumes context and does not activate a
+skill or retain previous tool results. See the [capability guide](./docs/USER-GUIDE.md#fixed-capability-references).
 
 Record the printed `LoopForge loop: <id>`. Press Ctrl+C to request a pause;
 resume later with:
@@ -85,5 +100,7 @@ scripted API endpoint, without a live provider key.
 - [Architecture and source map](./docs/ARCHITECTURE.md)
 - [Host integration and support boundary](./docs/HOST-INTEGRATION.md)
 - [Contribution and release checks](./docs/RELEASE-CHECKLIST.md)
+- [Long-task comparison plan (中文, not yet executed)](./docs/LONG-RUN-EVALUATION.zh-CN.md)
+- [Experimental evidence index (中文; historical runs, not current-version guarantees)](./docs/EXPERIMENTS.zh-CN.md)
 
 MIT licensed; see [LICENSE](./LICENSE).

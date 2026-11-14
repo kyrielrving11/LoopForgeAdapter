@@ -1,7 +1,7 @@
 import net from "node:net";
 import os from "node:os";
 import path from "node:path";
-import { randomUUID } from "node:crypto";
+import { createHash, randomUUID } from "node:crypto";
 import { rmSync } from "node:fs";
 
 export interface ClaudeHookInput {
@@ -13,11 +13,18 @@ export interface ClaudeHookInput {
   tool_name?: string;
   tool_use_id?: string;
   agent_id?: string;
+  /** Exact UTF-8 UserPromptSubmit digest; never the prompt or LoopForge promptHash. */
+  promptHash?: string;
   /** Execution-control signal only, never an input/output payload. */
   background?: boolean;
 }
 
 export interface ClaudeHookEndpoint { address: string; token: string }
+
+/** Transport equality only: no trimming, newline conversion or semantic interpretation. */
+export function claudePromptHash(prompt: string): string {
+  return createHash("sha256").update(prompt, "utf8").digest("hex");
+}
 
 /** Ephemeral host lifecycle signals only; no transcript or round facts. */
 export class ClaudeLifecycleServer {

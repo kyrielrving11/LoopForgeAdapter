@@ -1,0 +1,456 @@
+{
+  "measuredAt": "2026-11-13T12:34:32.352Z",
+  "mode": "live-deepseek",
+  "stableUser": true,
+  "passed": true,
+  "elapsedMs": 29320,
+  "artificialRoundDelayMs": 0,
+  "hostStarts": 1,
+  "mcpStarts": 1,
+  "nativeSessionHashes": [
+    "ccba021ca50002c97d530dc12b8fd1fdd572e188a15f34cd2d0d3f32c40f40ce",
+    "2255758e7f3b46b0c2c49425b714f48ac2f53dd5791448e6eae29f1d942f7591",
+    "2a194a5204d9368a2d1efb86c29280c036f4782e5d7d8a16b00237b068eddb52"
+  ],
+  "checks": [
+    {
+      "round": 0,
+      "passed": true
+    },
+    {
+      "round": 1,
+      "passed": true
+    },
+    {
+      "round": 2,
+      "passed": true
+    }
+  ],
+  "serviceErrors": [],
+  "finalSourceHash": "cdc68b0ece72fba42e2e016ae8e10aaab54f8612b99118f0ad89fb512dcef042",
+  "measurements": [
+    {
+      "round": 0,
+      "firstRequest": true,
+      "systemHash": "5440792d494717ab431edee298d8a8fee686668695db23625989b47660254294",
+      "toolsHash": "7d3d2258c9baea8eef71e7c5a85b5ab6d942446cc48f8345a4ff4d772e56af64",
+      "nativeUserHash": "7dd66533a6ea2dc6fd35f7a3b5c179a883d2095a1b08d78dafe777698cf7edb2",
+      "previousPromptAbsent": true,
+      "previousToolResultAbsent": true,
+      "oldSkillBodyAbsent": true,
+      "currentToolResultPresent": false,
+      "toolErrors": [],
+      "status": 200,
+      "elapsedMs": 974,
+      "firstContentMs": 749,
+      "usage": {
+        "input_tokens": 5037,
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 0,
+        "output_tokens": 86
+      },
+      "complete": true,
+      "stopReason": "tool_use",
+      "toolNames": [
+        "mcp__workload__fixture",
+        "Skill"
+      ]
+    },
+    {
+      "round": 0,
+      "firstRequest": false,
+      "systemHash": "5440792d494717ab431edee298d8a8fee686668695db23625989b47660254294",
+      "toolsHash": "7d3d2258c9baea8eef71e7c5a85b5ab6d942446cc48f8345a4ff4d772e56af64",
+      "nativeUserHash": "7dd66533a6ea2dc6fd35f7a3b5c179a883d2095a1b08d78dafe777698cf7edb2",
+      "previousPromptAbsent": true,
+      "previousToolResultAbsent": true,
+      "oldSkillBodyAbsent": false,
+      "currentToolResultPresent": true,
+      "toolErrors": [],
+      "status": 200,
+      "elapsedMs": 769,
+      "firstContentMs": 273,
+      "usage": {
+        "input_tokens": 272,
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 5120,
+        "output_tokens": 75
+      },
+      "complete": true,
+      "stopReason": "tool_use",
+      "toolNames": [
+        "Read"
+      ]
+    },
+    {
+      "round": 0,
+      "firstRequest": false,
+      "systemHash": "5440792d494717ab431edee298d8a8fee686668695db23625989b47660254294",
+      "toolsHash": "7d3d2258c9baea8eef71e7c5a85b5ab6d942446cc48f8345a4ff4d772e56af64",
+      "nativeUserHash": "7dd66533a6ea2dc6fd35f7a3b5c179a883d2095a1b08d78dafe777698cf7edb2",
+      "previousPromptAbsent": true,
+      "previousToolResultAbsent": true,
+      "oldSkillBodyAbsent": false,
+      "currentToolResultPresent": true,
+      "toolErrors": [],
+      "status": 200,
+      "elapsedMs": 856,
+      "firstContentMs": 525,
+      "usage": {
+        "input_tokens": 243,
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 5248,
+        "output_tokens": 73
+      },
+      "complete": true,
+      "stopReason": "tool_use",
+      "toolNames": [
+        "Read"
+      ]
+    },
+    {
+      "round": 0,
+      "firstRequest": false,
+      "systemHash": "5440792d494717ab431edee298d8a8fee686668695db23625989b47660254294",
+      "toolsHash": "7d3d2258c9baea8eef71e7c5a85b5ab6d942446cc48f8345a4ff4d772e56af64",
+      "nativeUserHash": "7dd66533a6ea2dc6fd35f7a3b5c179a883d2095a1b08d78dafe777698cf7edb2",
+      "previousPromptAbsent": true,
+      "previousToolResultAbsent": true,
+      "oldSkillBodyAbsent": false,
+      "currentToolResultPresent": true,
+      "toolErrors": [
+        "File does not exist. Note: your current working directory is <path>"
+      ],
+      "status": 200,
+      "elapsedMs": 1569,
+      "firstContentMs": 569,
+      "usage": {
+        "input_tokens": 237,
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 5376,
+        "output_tokens": 299
+      },
+      "complete": true,
+      "stopReason": "tool_use",
+      "toolNames": [
+        "Write"
+      ]
+    },
+    {
+      "round": 0,
+      "firstRequest": false,
+      "systemHash": "5440792d494717ab431edee298d8a8fee686668695db23625989b47660254294",
+      "toolsHash": "7d3d2258c9baea8eef71e7c5a85b5ab6d942446cc48f8345a4ff4d772e56af64",
+      "nativeUserHash": "7dd66533a6ea2dc6fd35f7a3b5c179a883d2095a1b08d78dafe777698cf7edb2",
+      "previousPromptAbsent": true,
+      "previousToolResultAbsent": true,
+      "oldSkillBodyAbsent": false,
+      "currentToolResultPresent": true,
+      "toolErrors": [
+        "File does not exist. Note: your current working directory is <path>"
+      ],
+      "status": 200,
+      "elapsedMs": 1570,
+      "firstContentMs": 1560,
+      "usage": {
+        "input_tokens": 215,
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 5760,
+        "output_tokens": 43
+      },
+      "complete": true,
+      "stopReason": "tool_use",
+      "toolNames": [
+        "mcp__workload__check"
+      ]
+    },
+    {
+      "round": 0,
+      "firstRequest": false,
+      "systemHash": "5440792d494717ab431edee298d8a8fee686668695db23625989b47660254294",
+      "toolsHash": "7d3d2258c9baea8eef71e7c5a85b5ab6d942446cc48f8345a4ff4d772e56af64",
+      "nativeUserHash": "7dd66533a6ea2dc6fd35f7a3b5c179a883d2095a1b08d78dafe777698cf7edb2",
+      "previousPromptAbsent": true,
+      "previousToolResultAbsent": true,
+      "oldSkillBodyAbsent": false,
+      "currentToolResultPresent": true,
+      "toolErrors": [
+        "File does not exist. Note: your current working directory is <path>"
+      ],
+      "status": 200,
+      "elapsedMs": 825,
+      "firstContentMs": 600,
+      "usage": {
+        "input_tokens": 161,
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 5888,
+        "output_tokens": 87
+      },
+      "complete": true,
+      "stopReason": "tool_use",
+      "toolNames": [
+        "mcp__loopforge-adapter__loopforge_next"
+      ]
+    },
+    {
+      "round": 1,
+      "firstRequest": true,
+      "systemHash": "5440792d494717ab431edee298d8a8fee686668695db23625989b47660254294",
+      "toolsHash": "7d3d2258c9baea8eef71e7c5a85b5ab6d942446cc48f8345a4ff4d772e56af64",
+      "nativeUserHash": "8e30f0c33e4c82ffb3a504a5e75a22d53421e9b2bba4a1ca9a2656dd5f093718",
+      "previousPromptAbsent": true,
+      "previousToolResultAbsent": true,
+      "oldSkillBodyAbsent": true,
+      "currentToolResultPresent": false,
+      "toolErrors": [],
+      "status": 200,
+      "elapsedMs": 791,
+      "firstContentMs": 701,
+      "usage": {
+        "input_tokens": 2110,
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 3072,
+        "output_tokens": 55
+      },
+      "complete": true,
+      "stopReason": "tool_use",
+      "toolNames": [
+        "mcp__workload__fixture"
+      ]
+    },
+    {
+      "round": 1,
+      "firstRequest": false,
+      "systemHash": "5440792d494717ab431edee298d8a8fee686668695db23625989b47660254294",
+      "toolsHash": "7d3d2258c9baea8eef71e7c5a85b5ab6d942446cc48f8345a4ff4d772e56af64",
+      "nativeUserHash": "8e30f0c33e4c82ffb3a504a5e75a22d53421e9b2bba4a1ca9a2656dd5f093718",
+      "previousPromptAbsent": true,
+      "previousToolResultAbsent": true,
+      "oldSkillBodyAbsent": true,
+      "currentToolResultPresent": true,
+      "toolErrors": [],
+      "status": 200,
+      "elapsedMs": 1058,
+      "firstContentMs": 741,
+      "usage": {
+        "input_tokens": 189,
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 5120,
+        "output_tokens": 73
+      },
+      "complete": true,
+      "stopReason": "tool_use",
+      "toolNames": [
+        "Read"
+      ]
+    },
+    {
+      "round": 1,
+      "firstRequest": false,
+      "systemHash": "5440792d494717ab431edee298d8a8fee686668695db23625989b47660254294",
+      "toolsHash": "7d3d2258c9baea8eef71e7c5a85b5ab6d942446cc48f8345a4ff4d772e56af64",
+      "nativeUserHash": "8e30f0c33e4c82ffb3a504a5e75a22d53421e9b2bba4a1ca9a2656dd5f093718",
+      "previousPromptAbsent": true,
+      "previousToolResultAbsent": true,
+      "oldSkillBodyAbsent": true,
+      "currentToolResultPresent": true,
+      "toolErrors": [],
+      "status": 200,
+      "elapsedMs": 1796,
+      "firstContentMs": 680,
+      "usage": {
+        "input_tokens": 139,
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 5376,
+        "output_tokens": 333
+      },
+      "complete": true,
+      "stopReason": "tool_use",
+      "toolNames": [
+        "Write"
+      ]
+    },
+    {
+      "round": 1,
+      "firstRequest": false,
+      "systemHash": "5440792d494717ab431edee298d8a8fee686668695db23625989b47660254294",
+      "toolsHash": "7d3d2258c9baea8eef71e7c5a85b5ab6d942446cc48f8345a4ff4d772e56af64",
+      "nativeUserHash": "8e30f0c33e4c82ffb3a504a5e75a22d53421e9b2bba4a1ca9a2656dd5f093718",
+      "previousPromptAbsent": true,
+      "previousToolResultAbsent": true,
+      "oldSkillBodyAbsent": true,
+      "currentToolResultPresent": true,
+      "toolErrors": [],
+      "status": 200,
+      "elapsedMs": 820,
+      "firstContentMs": 818,
+      "usage": {
+        "input_tokens": 151,
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 5760,
+        "output_tokens": 43
+      },
+      "complete": true,
+      "stopReason": "tool_use",
+      "toolNames": [
+        "mcp__workload__check"
+      ]
+    },
+    {
+      "round": 1,
+      "firstRequest": false,
+      "systemHash": "5440792d494717ab431edee298d8a8fee686668695db23625989b47660254294",
+      "toolsHash": "7d3d2258c9baea8eef71e7c5a85b5ab6d942446cc48f8345a4ff4d772e56af64",
+      "nativeUserHash": "8e30f0c33e4c82ffb3a504a5e75a22d53421e9b2bba4a1ca9a2656dd5f093718",
+      "previousPromptAbsent": true,
+      "previousToolResultAbsent": true,
+      "oldSkillBodyAbsent": true,
+      "currentToolResultPresent": true,
+      "toolErrors": [],
+      "status": 200,
+      "elapsedMs": 1044,
+      "firstContentMs": 739,
+      "usage": {
+        "input_tokens": 225,
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 5760,
+        "output_tokens": 104
+      },
+      "complete": true,
+      "stopReason": "tool_use",
+      "toolNames": [
+        "mcp__loopforge-adapter__loopforge_next"
+      ]
+    },
+    {
+      "round": 2,
+      "firstRequest": true,
+      "systemHash": "5440792d494717ab431edee298d8a8fee686668695db23625989b47660254294",
+      "toolsHash": "7d3d2258c9baea8eef71e7c5a85b5ab6d942446cc48f8345a4ff4d772e56af64",
+      "nativeUserHash": "9bb0204bb2f4804ff892314a236ed5b05bf20a16d009e78262f7caee0cb36c2a",
+      "previousPromptAbsent": true,
+      "previousToolResultAbsent": true,
+      "oldSkillBodyAbsent": true,
+      "currentToolResultPresent": false,
+      "toolErrors": [],
+      "status": 200,
+      "elapsedMs": 837,
+      "firstContentMs": 636,
+      "usage": {
+        "input_tokens": 1987,
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 3200,
+        "output_tokens": 55
+      },
+      "complete": true,
+      "stopReason": "tool_use",
+      "toolNames": [
+        "mcp__workload__fixture"
+      ]
+    },
+    {
+      "round": 2,
+      "firstRequest": false,
+      "systemHash": "5440792d494717ab431edee298d8a8fee686668695db23625989b47660254294",
+      "toolsHash": "7d3d2258c9baea8eef71e7c5a85b5ab6d942446cc48f8345a4ff4d772e56af64",
+      "nativeUserHash": "9bb0204bb2f4804ff892314a236ed5b05bf20a16d009e78262f7caee0cb36c2a",
+      "previousPromptAbsent": true,
+      "previousToolResultAbsent": true,
+      "oldSkillBodyAbsent": true,
+      "currentToolResultPresent": true,
+      "toolErrors": [],
+      "status": 200,
+      "elapsedMs": 1057,
+      "firstContentMs": 714,
+      "usage": {
+        "input_tokens": 194,
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 5120,
+        "output_tokens": 72
+      },
+      "complete": true,
+      "stopReason": "tool_use",
+      "toolNames": [
+        "Read"
+      ]
+    },
+    {
+      "round": 2,
+      "firstRequest": false,
+      "systemHash": "5440792d494717ab431edee298d8a8fee686668695db23625989b47660254294",
+      "toolsHash": "7d3d2258c9baea8eef71e7c5a85b5ab6d942446cc48f8345a4ff4d772e56af64",
+      "nativeUserHash": "9bb0204bb2f4804ff892314a236ed5b05bf20a16d009e78262f7caee0cb36c2a",
+      "previousPromptAbsent": true,
+      "previousToolResultAbsent": true,
+      "oldSkillBodyAbsent": true,
+      "currentToolResultPresent": true,
+      "toolErrors": [],
+      "status": 200,
+      "elapsedMs": 2022,
+      "firstContentMs": 359,
+      "usage": {
+        "input_tokens": 291,
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 5376,
+        "output_tokens": 324
+      },
+      "complete": true,
+      "stopReason": "tool_use",
+      "toolNames": [
+        "Edit"
+      ]
+    },
+    {
+      "round": 2,
+      "firstRequest": false,
+      "systemHash": "5440792d494717ab431edee298d8a8fee686668695db23625989b47660254294",
+      "toolsHash": "7d3d2258c9baea8eef71e7c5a85b5ab6d942446cc48f8345a4ff4d772e56af64",
+      "nativeUserHash": "9bb0204bb2f4804ff892314a236ed5b05bf20a16d009e78262f7caee0cb36c2a",
+      "previousPromptAbsent": true,
+      "previousToolResultAbsent": true,
+      "oldSkillBodyAbsent": true,
+      "currentToolResultPresent": true,
+      "toolErrors": [],
+      "status": 200,
+      "elapsedMs": 789,
+      "firstContentMs": 744,
+      "usage": {
+        "input_tokens": 439,
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 5632,
+        "output_tokens": 43
+      },
+      "complete": true,
+      "stopReason": "tool_use",
+      "toolNames": [
+        "mcp__workload__check"
+      ]
+    },
+    {
+      "round": 2,
+      "firstRequest": false,
+      "systemHash": "5440792d494717ab431edee298d8a8fee686668695db23625989b47660254294",
+      "toolsHash": "7d3d2258c9baea8eef71e7c5a85b5ab6d942446cc48f8345a4ff4d772e56af64",
+      "nativeUserHash": "9bb0204bb2f4804ff892314a236ed5b05bf20a16d009e78262f7caee0cb36c2a",
+      "previousPromptAbsent": true,
+      "previousToolResultAbsent": true,
+      "oldSkillBodyAbsent": true,
+      "currentToolResultPresent": true,
+      "toolErrors": [],
+      "status": 200,
+      "elapsedMs": 1192,
+      "firstContentMs": 912,
+      "usage": {
+        "input_tokens": 257,
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 5888,
+        "output_tokens": 101
+      },
+      "complete": true,
+      "stopReason": "tool_use",
+      "toolNames": [
+        "mcp__loopforge-adapter__loopforge_next"
+      ]
+    }
+  ]
+}

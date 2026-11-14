@@ -1,0 +1,539 @@
+{
+  "environment": {
+    "platform": "Windows",
+    "node": "v24.16.0",
+    "claudeCode": "2.1.323",
+    "provider": "DeepSeek official Anthropic API",
+    "model": "deepseek-flash[1m]"
+  },
+  "immediatePrefixTrials": {
+    "measuredAt": "2026-11-13T11:59:36.065Z",
+    "mode": "live-deepseek",
+    "node": "v24.16.0",
+    "model": "deepseek-flash[1m]",
+    "trials": [
+      {
+        "omitAttribution": false,
+        "hostStarts": 1,
+        "freshConversations": 3,
+        "observations": [
+          {
+            "systemHash": "4d27d8e87d493f05634e901c8068bdec433701bdc19e226a27ba8b62302ddd35",
+            "toolsHash": "8183c1c11b1f29c57eeb6947e2e25efb67c5467416197c61614c00c9c46950ef",
+            "attributionBlock": true,
+            "previousRoundAbsent": true,
+            "fixedReferencePresent": true,
+            "status": 200,
+            "firstByteMs": 423,
+            "elapsedMs": 1460,
+            "finalUsage": {
+              "input_tokens": 4020,
+              "cache_creation_input_tokens": 0,
+              "cache_read_input_tokens": 0,
+              "output_tokens": 61
+            },
+            "complete": true
+          },
+          {
+            "systemHash": "1fa31a04698843892490c84555a0cfa6c0e01b905f207cb8e8292a54665bc3d0",
+            "toolsHash": "8183c1c11b1f29c57eeb6947e2e25efb67c5467416197c61614c00c9c46950ef",
+            "attributionBlock": true,
+            "previousRoundAbsent": true,
+            "fixedReferencePresent": true,
+            "status": 200,
+            "firstByteMs": 278,
+            "elapsedMs": 1125,
+            "finalUsage": {
+              "input_tokens": 4189,
+              "cache_creation_input_tokens": 0,
+              "cache_read_input_tokens": 0,
+              "output_tokens": 31
+            },
+            "complete": true
+          },
+          {
+            "systemHash": "1fa31a04698843892490c84555a0cfa6c0e01b905f207cb8e8292a54665bc3d0",
+            "toolsHash": "8183c1c11b1f29c57eeb6947e2e25efb67c5467416197c61614c00c9c46950ef",
+            "attributionBlock": true,
+            "previousRoundAbsent": true,
+            "fixedReferencePresent": true,
+            "status": 200,
+            "firstByteMs": 336,
+            "elapsedMs": 789,
+            "finalUsage": {
+              "input_tokens": 4189,
+              "cache_creation_input_tokens": 0,
+              "cache_read_input_tokens": 0,
+              "output_tokens": 31
+            },
+            "complete": true
+          }
+        ],
+        "systemIdentical": false,
+        "toolsIdentical": true,
+        "firstSystemDifference": {
+          "character": 71
+        },
+        "requestBytes": [
+          19088,
+          19927,
+          19927
+        ]
+      },
+      {
+        "omitAttribution": true,
+        "hostStarts": 1,
+        "freshConversations": 3,
+        "observations": [
+          {
+            "systemHash": "1eab1df244fde1a731e3380f0f2aa008a2ba3a02b797842cc755c747cb7de197",
+            "toolsHash": "8183c1c11b1f29c57eeb6947e2e25efb67c5467416197c61614c00c9c46950ef",
+            "attributionBlock": false,
+            "previousRoundAbsent": true,
+            "fixedReferencePresent": true,
+            "status": 200,
+            "firstByteMs": 312,
+            "elapsedMs": 1227,
+            "finalUsage": {
+              "input_tokens": 4018,
+              "cache_creation_input_tokens": 0,
+              "cache_read_input_tokens": 0,
+              "output_tokens": 81
+            },
+            "complete": true
+          },
+          {
+            "systemHash": "1eab1df244fde1a731e3380f0f2aa008a2ba3a02b797842cc755c747cb7de197",
+            "toolsHash": "8183c1c11b1f29c57eeb6947e2e25efb67c5467416197c61614c00c9c46950ef",
+            "attributionBlock": false,
+            "previousRoundAbsent": true,
+            "fixedReferencePresent": true,
+            "status": 200,
+            "firstByteMs": 335,
+            "elapsedMs": 940,
+            "finalUsage": {
+              "input_tokens": 4187,
+              "cache_creation_input_tokens": 0,
+              "cache_read_input_tokens": 0,
+              "output_tokens": 31
+            },
+            "complete": true
+          },
+          {
+            "systemHash": "1eab1df244fde1a731e3380f0f2aa008a2ba3a02b797842cc755c747cb7de197",
+            "toolsHash": "8183c1c11b1f29c57eeb6947e2e25efb67c5467416197c61614c00c9c46950ef",
+            "attributionBlock": false,
+            "previousRoundAbsent": true,
+            "fixedReferencePresent": true,
+            "status": 200,
+            "firstByteMs": 378,
+            "elapsedMs": 1043,
+            "finalUsage": {
+              "input_tokens": 4187,
+              "cache_creation_input_tokens": 0,
+              "cache_read_input_tokens": 0,
+              "output_tokens": 31
+            },
+            "complete": true
+          }
+        ],
+        "systemIdentical": true,
+        "toolsIdentical": true,
+        "firstSystemDifference": null,
+        "requestBytes": [
+          18992,
+          19831,
+          19831
+        ]
+      }
+    ]
+  },
+  "settledPrefixTrials": {
+    "measuredAt": "2026-11-13T12:03:10.909Z",
+    "mode": "live-deepseek",
+    "node": "v24.16.0",
+    "model": "deepseek-flash[1m]",
+    "referenceLines": 360,
+    "settleMs": 6000,
+    "trials": [
+      {
+        "omitAttribution": false,
+        "hostStarts": 1,
+        "freshConversations": 3,
+        "observations": [
+          {
+            "systemHash": "a456741b6e0f2092607e3c954ed9dde66308a0d5ab94aafa5ccfcbf4236816ec",
+            "toolsHash": "8183c1c11b1f29c57eeb6947e2e25efb67c5467416197c61614c00c9c46950ef",
+            "attributionBlock": true,
+            "previousRoundAbsent": true,
+            "fixedReferencePresent": true,
+            "status": 200,
+            "firstByteMs": 561,
+            "elapsedMs": 1041,
+            "finalUsage": {
+              "input_tokens": 8825,
+              "cache_creation_input_tokens": 0,
+              "cache_read_input_tokens": 0,
+              "output_tokens": 31
+            },
+            "complete": true
+          },
+          {
+            "systemHash": "fe2c4a6f935046a386023a12192b0d3db02fcddb8ea41ab9a73a7a32808fc14d",
+            "toolsHash": "8183c1c11b1f29c57eeb6947e2e25efb67c5467416197c61614c00c9c46950ef",
+            "attributionBlock": true,
+            "previousRoundAbsent": true,
+            "fixedReferencePresent": true,
+            "status": 200,
+            "firstByteMs": 478,
+            "elapsedMs": 992,
+            "finalUsage": {
+              "input_tokens": 8994,
+              "cache_creation_input_tokens": 0,
+              "cache_read_input_tokens": 0,
+              "output_tokens": 49
+            },
+            "complete": true
+          },
+          {
+            "systemHash": "fe2c4a6f935046a386023a12192b0d3db02fcddb8ea41ab9a73a7a32808fc14d",
+            "toolsHash": "8183c1c11b1f29c57eeb6947e2e25efb67c5467416197c61614c00c9c46950ef",
+            "attributionBlock": true,
+            "previousRoundAbsent": true,
+            "fixedReferencePresent": true,
+            "status": 200,
+            "firstByteMs": 789,
+            "elapsedMs": 1762,
+            "finalUsage": {
+              "input_tokens": 8994,
+              "cache_creation_input_tokens": 0,
+              "cache_read_input_tokens": 0,
+              "output_tokens": 57
+            },
+            "complete": true
+          }
+        ],
+        "systemIdentical": false,
+        "toolsIdentical": true,
+        "firstSystemDifference": {
+          "character": 71
+        },
+        "requestBytes": [
+          44048,
+          44887,
+          44887
+        ]
+      },
+      {
+        "omitAttribution": true,
+        "hostStarts": 1,
+        "freshConversations": 3,
+        "observations": [
+          {
+            "systemHash": "0f100eaa9b36130b4b4aa6df447fbca8a62493d6a9cf14b47d173b0711ee2f43",
+            "toolsHash": "8183c1c11b1f29c57eeb6947e2e25efb67c5467416197c61614c00c9c46950ef",
+            "attributionBlock": false,
+            "previousRoundAbsent": true,
+            "fixedReferencePresent": true,
+            "status": 200,
+            "firstByteMs": 302,
+            "elapsedMs": 894,
+            "finalUsage": {
+              "input_tokens": 8823,
+              "cache_creation_input_tokens": 0,
+              "cache_read_input_tokens": 0,
+              "output_tokens": 57
+            },
+            "complete": true
+          },
+          {
+            "systemHash": "0f100eaa9b36130b4b4aa6df447fbca8a62493d6a9cf14b47d173b0711ee2f43",
+            "toolsHash": "8183c1c11b1f29c57eeb6947e2e25efb67c5467416197c61614c00c9c46950ef",
+            "attributionBlock": false,
+            "previousRoundAbsent": true,
+            "fixedReferencePresent": true,
+            "status": 200,
+            "firstByteMs": 640,
+            "elapsedMs": 1131,
+            "finalUsage": {
+              "input_tokens": 8992,
+              "cache_creation_input_tokens": 0,
+              "cache_read_input_tokens": 0,
+              "output_tokens": 59
+            },
+            "complete": true
+          },
+          {
+            "systemHash": "0f100eaa9b36130b4b4aa6df447fbca8a62493d6a9cf14b47d173b0711ee2f43",
+            "toolsHash": "8183c1c11b1f29c57eeb6947e2e25efb67c5467416197c61614c00c9c46950ef",
+            "attributionBlock": false,
+            "previousRoundAbsent": true,
+            "fixedReferencePresent": true,
+            "status": 200,
+            "firstByteMs": 646,
+            "elapsedMs": 2130,
+            "finalUsage": {
+              "input_tokens": 8992,
+              "cache_creation_input_tokens": 0,
+              "cache_read_input_tokens": 0,
+              "output_tokens": 224
+            },
+            "complete": true
+          }
+        ],
+        "systemIdentical": true,
+        "toolsIdentical": true,
+        "firstSystemDifference": null,
+        "requestBytes": [
+          43952,
+          44791,
+          44791
+        ]
+      }
+    ]
+  },
+  "directProviderControl": {
+    "measuredAt": "2026-11-13T12:02:02.011Z",
+    "model": "deepseek-flash",
+    "intervalMs": 6000,
+    "kind": "direct-anthropic-exact-repeat-and-shared-prefix-control",
+    "observations": [
+      {
+        "request": "A",
+        "exactRepeat": false,
+        "elapsedMs": 1067,
+        "usage": {
+          "input_tokens": 4546,
+          "cache_creation_input_tokens": 0,
+          "cache_read_input_tokens": 0,
+          "output_tokens": 1
+        }
+      },
+      {
+        "request": "A",
+        "exactRepeat": true,
+        "elapsedMs": 1078,
+        "usage": {
+          "input_tokens": 194,
+          "cache_creation_input_tokens": 0,
+          "cache_read_input_tokens": 4352,
+          "output_tokens": 1
+        }
+      },
+      {
+        "request": "B",
+        "exactRepeat": false,
+        "elapsedMs": 708,
+        "usage": {
+          "input_tokens": 194,
+          "cache_creation_input_tokens": 0,
+          "cache_read_input_tokens": 4352,
+          "output_tokens": 1
+        }
+      },
+      {
+        "request": "C",
+        "exactRepeat": false,
+        "elapsedMs": 1097,
+        "usage": {
+          "input_tokens": 194,
+          "cache_creation_input_tokens": 0,
+          "cache_read_input_tokens": 4352,
+          "output_tokens": 1
+        }
+      }
+    ]
+  },
+  "identityComparison": {
+    "measuredAt": "2026-11-13T12:07:33.183Z",
+    "mode": "live-deepseek",
+    "node": "v24.16.0",
+    "model": "deepseek-flash[1m]",
+    "referenceLines": 360,
+    "settleMs": 6000,
+    "trials": [
+      {
+        "omitAttribution": true,
+        "stableUser": false,
+        "hostStarts": 1,
+        "freshConversations": 3,
+        "observations": [
+          {
+            "roundIndex": 0,
+            "systemHash": "8ad8f8aa595edce17d3a4314029408939458dd12ad8dcf418ec4eb9e929993f1",
+            "toolsHash": "8183c1c11b1f29c57eeb6947e2e25efb67c5467416197c61614c00c9c46950ef",
+            "attributionBlock": false,
+            "previousRoundAbsent": true,
+            "fixedReferencePresent": true,
+            "status": 200,
+            "firstByteMs": 498,
+            "elapsedMs": 856,
+            "finalUsage": {
+              "input_tokens": 8828,
+              "cache_creation_input_tokens": 0,
+              "cache_read_input_tokens": 0,
+              "output_tokens": 31
+            },
+            "complete": true,
+            "nativeUserHash": "50ba9cbdd1e78281c7fd898d43cdb31b768a3fef446d18be020b28740647b1d7",
+            "upstreamUserHash": "50ba9cbdd1e78281c7fd898d43cdb31b768a3fef446d18be020b28740647b1d7",
+            "nativeUserFields": [
+              "account_uuid",
+              "device_id",
+              "session_id"
+            ]
+          },
+          {
+            "roundIndex": 1,
+            "systemHash": "8ad8f8aa595edce17d3a4314029408939458dd12ad8dcf418ec4eb9e929993f1",
+            "toolsHash": "8183c1c11b1f29c57eeb6947e2e25efb67c5467416197c61614c00c9c46950ef",
+            "attributionBlock": false,
+            "previousRoundAbsent": true,
+            "fixedReferencePresent": true,
+            "status": 200,
+            "firstByteMs": 493,
+            "elapsedMs": 1548,
+            "finalUsage": {
+              "input_tokens": 8997,
+              "cache_creation_input_tokens": 0,
+              "cache_read_input_tokens": 0,
+              "output_tokens": 31
+            },
+            "complete": true,
+            "nativeUserHash": "42ad81d0dd4ca603545d5681a5ae72ddb2e382735ca871ef727e5c45afc88e7d",
+            "upstreamUserHash": "42ad81d0dd4ca603545d5681a5ae72ddb2e382735ca871ef727e5c45afc88e7d",
+            "nativeUserFields": [
+              "account_uuid",
+              "device_id",
+              "session_id"
+            ]
+          },
+          {
+            "roundIndex": 2,
+            "systemHash": "8ad8f8aa595edce17d3a4314029408939458dd12ad8dcf418ec4eb9e929993f1",
+            "toolsHash": "8183c1c11b1f29c57eeb6947e2e25efb67c5467416197c61614c00c9c46950ef",
+            "attributionBlock": false,
+            "previousRoundAbsent": true,
+            "fixedReferencePresent": true,
+            "status": 200,
+            "firstByteMs": 346,
+            "elapsedMs": 1258,
+            "finalUsage": {
+              "input_tokens": 8997,
+              "cache_creation_input_tokens": 0,
+              "cache_read_input_tokens": 0,
+              "output_tokens": 31
+            },
+            "complete": true,
+            "nativeUserHash": "4b15f841478e6bd63b1db8d475e30fc715d7d1b3693c7a79294b0643f1ae9e29",
+            "upstreamUserHash": "4b15f841478e6bd63b1db8d475e30fc715d7d1b3693c7a79294b0643f1ae9e29",
+            "nativeUserFields": [
+              "account_uuid",
+              "device_id",
+              "session_id"
+            ]
+          }
+        ],
+        "systemIdentical": true,
+        "toolsIdentical": true,
+        "firstSystemDifference": null,
+        "requestBytes": [
+          43952,
+          44791,
+          44791
+        ]
+      },
+      {
+        "omitAttribution": true,
+        "stableUser": true,
+        "hostStarts": 1,
+        "freshConversations": 3,
+        "observations": [
+          {
+            "roundIndex": 0,
+            "systemHash": "8ad8f8aa595edce17d3a4314029408939458dd12ad8dcf418ec4eb9e929993f1",
+            "toolsHash": "8183c1c11b1f29c57eeb6947e2e25efb67c5467416197c61614c00c9c46950ef",
+            "attributionBlock": false,
+            "previousRoundAbsent": true,
+            "fixedReferencePresent": true,
+            "status": 200,
+            "firstByteMs": 216,
+            "elapsedMs": 2081,
+            "finalUsage": {
+              "input_tokens": 8828,
+              "cache_creation_input_tokens": 0,
+              "cache_read_input_tokens": 0,
+              "output_tokens": 235
+            },
+            "complete": true,
+            "nativeUserHash": "bac4ed9102f31f0ea4068ff70b3f23b2156de6805867057918f8eb5582019627",
+            "upstreamUserHash": "aae55d392e99d3ff9d69157ef654ed9676bf6956a5dfde535fc720eda0a37cef",
+            "nativeUserFields": [
+              "account_uuid",
+              "device_id",
+              "session_id"
+            ]
+          },
+          {
+            "roundIndex": 1,
+            "systemHash": "8ad8f8aa595edce17d3a4314029408939458dd12ad8dcf418ec4eb9e929993f1",
+            "toolsHash": "8183c1c11b1f29c57eeb6947e2e25efb67c5467416197c61614c00c9c46950ef",
+            "attributionBlock": false,
+            "previousRoundAbsent": true,
+            "fixedReferencePresent": true,
+            "status": 200,
+            "firstByteMs": 474,
+            "elapsedMs": 1328,
+            "finalUsage": {
+              "input_tokens": 677,
+              "cache_creation_input_tokens": 0,
+              "cache_read_input_tokens": 8320,
+              "output_tokens": 55
+            },
+            "complete": true,
+            "nativeUserHash": "7723bd903744d5f4b2303dd9b386c9196a68006bb27c9ed01ecf97c88543afc1",
+            "upstreamUserHash": "aae55d392e99d3ff9d69157ef654ed9676bf6956a5dfde535fc720eda0a37cef",
+            "nativeUserFields": [
+              "account_uuid",
+              "device_id",
+              "session_id"
+            ]
+          },
+          {
+            "roundIndex": 2,
+            "systemHash": "8ad8f8aa595edce17d3a4314029408939458dd12ad8dcf418ec4eb9e929993f1",
+            "toolsHash": "8183c1c11b1f29c57eeb6947e2e25efb67c5467416197c61614c00c9c46950ef",
+            "attributionBlock": false,
+            "previousRoundAbsent": true,
+            "fixedReferencePresent": true,
+            "status": 200,
+            "firstByteMs": 428,
+            "elapsedMs": 1362,
+            "finalUsage": {
+              "input_tokens": 549,
+              "cache_creation_input_tokens": 0,
+              "cache_read_input_tokens": 8448,
+              "output_tokens": 81
+            },
+            "complete": true,
+            "nativeUserHash": "d7b4816446d99fdfa41235bea92a2ad32b1f25f71a0ba89bfe1ec64e98e5d7d3",
+            "upstreamUserHash": "aae55d392e99d3ff9d69157ef654ed9676bf6956a5dfde535fc720eda0a37cef",
+            "nativeUserFields": [
+              "account_uuid",
+              "device_id",
+              "session_id"
+            ]
+          }
+        ],
+        "systemIdentical": true,
+        "toolsIdentical": true,
+        "firstSystemDifference": null,
+        "requestBytes": [
+          43952,
+          44791,
+          44791
+        ]
+      }
+    ]
+  }
+}

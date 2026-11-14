@@ -63,3 +63,15 @@ test("CLI keeps host reuse selection outside LoopForge invocation input", () => 
   assert.deepEqual(parsed.input, { task: "x" });
   assert.throws(() => parseCli(["start", "--task", "x", "--claude-runtime", "unknown"]), /must be restart or reuse/);
 }));
+
+test("CLI keeps ordered capability files outside exact and convenience LoopForge inputs", () => workspace((directory) => {
+  for (const input of [["--task", "x"], ["--input-json", '{"task":"x"}']]) {
+    const parsed = parseCli(["start", "--workspace", directory, ...input,
+      "--capability-file", "reference.md", "--capability-file", path.join(directory, "SKILL.md")]);
+    assert.notEqual(parsed, "help");
+    if (parsed === "help") return;
+    assert.deepEqual(parsed.capabilityFiles, [path.resolve("reference.md"), path.join(directory, "SKILL.md")]);
+    assert.deepEqual(parsed.input, { task: "x" });
+  }
+  assert.throws(() => parseCli(["start", "--task", "x", "--capability-file"]), /requires a value/);
+}));

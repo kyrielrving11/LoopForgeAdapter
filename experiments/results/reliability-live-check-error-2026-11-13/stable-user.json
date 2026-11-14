@@ -1,0 +1,781 @@
+{
+  "measuredAt": "2026-11-13T13:24:39.725Z",
+  "mode": "live-deepseek",
+  "stableUser": true,
+  "fault": "check-error",
+  "passed": true,
+  "elapsedMs": 34285,
+  "artificialRoundDelayMs": 0,
+  "hostStarts": 1,
+  "mcpStarts": 1,
+  "nativeSessionHashes": [
+    "aca59e6eba578c459bdeaae01163d3ddc0e634b773d68b6e0e65358926506ebd",
+    "b475dc75f57ea176f8011abe2943ab74b48fe035f3203cd392e64b98df23b860",
+    "7203a8891e5a6b9de179a32ef3d2faefd0b1ea45f359d873933f5f3213263002"
+  ],
+  "checks": [
+    {
+      "round": 0,
+      "passed": true
+    },
+    {
+      "round": 1,
+      "passed": true
+    },
+    {
+      "round": 2,
+      "passed": true
+    }
+  ],
+  "serviceErrors": [
+    {
+      "kind": "injected-error",
+      "round": 0,
+      "tool": "check"
+    }
+  ],
+  "serviceEvents": [
+    {
+      "kind": "start"
+    },
+    {
+      "kind": "received",
+      "tool": "fixture",
+      "round": 0
+    },
+    {
+      "kind": "fixture",
+      "round": 0
+    },
+    {
+      "kind": "received",
+      "tool": "check",
+      "round": 0
+    },
+    {
+      "kind": "injected-error",
+      "tool": "check",
+      "round": 0
+    },
+    {
+      "kind": "received",
+      "tool": "check",
+      "round": 0
+    },
+    {
+      "kind": "check",
+      "round": 0,
+      "passed": true,
+      "sourceHash": "d370442f94517578528cee0f11d71b8073b5402ec58b06a7cdf55cc610077d69"
+    },
+    {
+      "kind": "received",
+      "tool": "fixture",
+      "round": 1
+    },
+    {
+      "kind": "fixture",
+      "round": 1
+    },
+    {
+      "kind": "received",
+      "tool": "check",
+      "round": 1
+    },
+    {
+      "kind": "check",
+      "round": 1,
+      "passed": true,
+      "sourceHash": "f05c194a531e4459dd2ce20603cb392d11e33fcac4813eda4c58d9427d8f1613"
+    },
+    {
+      "kind": "received",
+      "tool": "fixture",
+      "round": 2
+    },
+    {
+      "kind": "fixture",
+      "round": 2
+    },
+    {
+      "kind": "received",
+      "tool": "check",
+      "round": 2
+    },
+    {
+      "kind": "check",
+      "round": 2,
+      "passed": true,
+      "sourceHash": "00e6b28aee47453dfbe7a120f980bbd549003598b45e0612a536b222b6d3a9f6"
+    }
+  ],
+  "finalSourceHash": "00e6b28aee47453dfbe7a120f980bbd549003598b45e0612a536b222b6d3a9f6",
+  "measurements": [
+    {
+      "round": 0,
+      "firstRequest": true,
+      "systemHash": "8b130e81019f45f4906e91aed24097eb5ac1b9a44074e3152f9a0a1a93e00c96",
+      "toolsHash": "7d3d2258c9baea8eef71e7c5a85b5ab6d942446cc48f8345a4ff4d772e56af64",
+      "nativeUserHash": "4232259c7e7bec03386973bf5e63d4d543f290d230a7a8746719fc26011eb327",
+      "previousPromptAbsent": true,
+      "previousToolResultAbsent": true,
+      "oldSkillBodyAbsent": true,
+      "currentToolResultPresent": false,
+      "toolErrors": [],
+      "toolResults": [],
+      "fixedReferencePresent": true,
+      "status": 200,
+      "elapsedMs": 1722,
+      "firstContentMs": 1321,
+      "usage": {
+        "input_tokens": 5039,
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 0,
+        "output_tokens": 150
+      },
+      "complete": true,
+      "stopReason": "tool_use",
+      "toolNames": [
+        "mcp__workload__fixture",
+        "Read",
+        "Skill"
+      ]
+    },
+    {
+      "round": 0,
+      "firstRequest": false,
+      "systemHash": "8b130e81019f45f4906e91aed24097eb5ac1b9a44074e3152f9a0a1a93e00c96",
+      "toolsHash": "7d3d2258c9baea8eef71e7c5a85b5ab6d942446cc48f8345a4ff4d772e56af64",
+      "nativeUserHash": "4232259c7e7bec03386973bf5e63d4d543f290d230a7a8746719fc26011eb327",
+      "previousPromptAbsent": true,
+      "previousToolResultAbsent": true,
+      "oldSkillBodyAbsent": false,
+      "currentToolResultPresent": true,
+      "toolErrors": [],
+      "toolResults": [
+        {
+          "tool": "mcp__workload__fixture",
+          "idHash": "5f4e4671ca1459dd707c8f46ff097def8f8556118a580ea9c41ae6aadf0eb763",
+          "error": false,
+          "detail": ""
+        },
+        {
+          "tool": "Read",
+          "idHash": "6f29cc7477f1e27f1311380d2a3066048e68857e764f661349b6a88509f94c46",
+          "error": false,
+          "detail": ""
+        },
+        {
+          "tool": "Skill",
+          "idHash": "c07560252dfbb0482f1fb55b6b65fd97b9d63d713314c7107c8d6b11c3efcabd",
+          "error": false,
+          "detail": ""
+        }
+      ],
+      "fixedReferencePresent": true,
+      "status": 200,
+      "elapsedMs": 2492,
+      "firstContentMs": 633,
+      "usage": {
+        "input_tokens": 363,
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 5120,
+        "output_tokens": 383
+      },
+      "complete": true,
+      "stopReason": "tool_use",
+      "toolNames": [
+        "Write"
+      ]
+    },
+    {
+      "round": 0,
+      "firstRequest": false,
+      "systemHash": "8b130e81019f45f4906e91aed24097eb5ac1b9a44074e3152f9a0a1a93e00c96",
+      "toolsHash": "7d3d2258c9baea8eef71e7c5a85b5ab6d942446cc48f8345a4ff4d772e56af64",
+      "nativeUserHash": "4232259c7e7bec03386973bf5e63d4d543f290d230a7a8746719fc26011eb327",
+      "previousPromptAbsent": true,
+      "previousToolResultAbsent": true,
+      "oldSkillBodyAbsent": false,
+      "currentToolResultPresent": true,
+      "toolErrors": [],
+      "toolResults": [
+        {
+          "tool": "mcp__workload__fixture",
+          "idHash": "5f4e4671ca1459dd707c8f46ff097def8f8556118a580ea9c41ae6aadf0eb763",
+          "error": false,
+          "detail": ""
+        },
+        {
+          "tool": "Read",
+          "idHash": "6f29cc7477f1e27f1311380d2a3066048e68857e764f661349b6a88509f94c46",
+          "error": false,
+          "detail": ""
+        },
+        {
+          "tool": "Skill",
+          "idHash": "c07560252dfbb0482f1fb55b6b65fd97b9d63d713314c7107c8d6b11c3efcabd",
+          "error": false,
+          "detail": ""
+        },
+        {
+          "tool": "Write",
+          "idHash": "02ad4cc6c87c587162786c7daa289119d92f62bc5f7ba93224d0f539e7a18dbc",
+          "error": false,
+          "detail": ""
+        }
+      ],
+      "fixedReferencePresent": true,
+      "status": 200,
+      "elapsedMs": 1098,
+      "firstContentMs": 1028,
+      "usage": {
+        "input_tokens": 169,
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 5760,
+        "output_tokens": 43
+      },
+      "complete": true,
+      "stopReason": "tool_use",
+      "toolNames": [
+        "mcp__workload__check"
+      ]
+    },
+    {
+      "round": 0,
+      "firstRequest": false,
+      "systemHash": "8b130e81019f45f4906e91aed24097eb5ac1b9a44074e3152f9a0a1a93e00c96",
+      "toolsHash": "7d3d2258c9baea8eef71e7c5a85b5ab6d942446cc48f8345a4ff4d772e56af64",
+      "nativeUserHash": "4232259c7e7bec03386973bf5e63d4d543f290d230a7a8746719fc26011eb327",
+      "previousPromptAbsent": true,
+      "previousToolResultAbsent": true,
+      "oldSkillBodyAbsent": false,
+      "currentToolResultPresent": true,
+      "toolErrors": [
+        "DIAGNOSTIC_CHECK_ERROR: one injected tool error; no acceptance command ran. Retry check with the same valid round argument."
+      ],
+      "toolResults": [
+        {
+          "tool": "mcp__workload__fixture",
+          "idHash": "5f4e4671ca1459dd707c8f46ff097def8f8556118a580ea9c41ae6aadf0eb763",
+          "error": false,
+          "detail": ""
+        },
+        {
+          "tool": "Read",
+          "idHash": "6f29cc7477f1e27f1311380d2a3066048e68857e764f661349b6a88509f94c46",
+          "error": false,
+          "detail": ""
+        },
+        {
+          "tool": "Skill",
+          "idHash": "c07560252dfbb0482f1fb55b6b65fd97b9d63d713314c7107c8d6b11c3efcabd",
+          "error": false,
+          "detail": ""
+        },
+        {
+          "tool": "Write",
+          "idHash": "02ad4cc6c87c587162786c7daa289119d92f62bc5f7ba93224d0f539e7a18dbc",
+          "error": false,
+          "detail": ""
+        },
+        {
+          "tool": "mcp__workload__check",
+          "idHash": "564d31e2d2e978191465dbd573f18b75039c05f6bb5536e38c2e9c5fa8f7ed6e",
+          "error": true,
+          "detail": "DIAGNOSTIC_CHECK_ERROR: one injected tool error; no acceptance command ran. Retry check with the same valid round argument."
+        }
+      ],
+      "fixedReferencePresent": true,
+      "status": 200,
+      "elapsedMs": 694,
+      "firstContentMs": 471,
+      "usage": {
+        "input_tokens": 251,
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 5760,
+        "output_tokens": 46
+      },
+      "complete": true,
+      "stopReason": "tool_use",
+      "toolNames": [
+        "mcp__workload__check"
+      ]
+    },
+    {
+      "round": 0,
+      "firstRequest": false,
+      "systemHash": "8b130e81019f45f4906e91aed24097eb5ac1b9a44074e3152f9a0a1a93e00c96",
+      "toolsHash": "7d3d2258c9baea8eef71e7c5a85b5ab6d942446cc48f8345a4ff4d772e56af64",
+      "nativeUserHash": "4232259c7e7bec03386973bf5e63d4d543f290d230a7a8746719fc26011eb327",
+      "previousPromptAbsent": true,
+      "previousToolResultAbsent": true,
+      "oldSkillBodyAbsent": false,
+      "currentToolResultPresent": true,
+      "toolErrors": [
+        "DIAGNOSTIC_CHECK_ERROR: one injected tool error; no acceptance command ran. Retry check with the same valid round argument."
+      ],
+      "toolResults": [
+        {
+          "tool": "mcp__workload__fixture",
+          "idHash": "5f4e4671ca1459dd707c8f46ff097def8f8556118a580ea9c41ae6aadf0eb763",
+          "error": false,
+          "detail": ""
+        },
+        {
+          "tool": "Read",
+          "idHash": "6f29cc7477f1e27f1311380d2a3066048e68857e764f661349b6a88509f94c46",
+          "error": false,
+          "detail": ""
+        },
+        {
+          "tool": "Skill",
+          "idHash": "c07560252dfbb0482f1fb55b6b65fd97b9d63d713314c7107c8d6b11c3efcabd",
+          "error": false,
+          "detail": ""
+        },
+        {
+          "tool": "Write",
+          "idHash": "02ad4cc6c87c587162786c7daa289119d92f62bc5f7ba93224d0f539e7a18dbc",
+          "error": false,
+          "detail": ""
+        },
+        {
+          "tool": "mcp__workload__check",
+          "idHash": "564d31e2d2e978191465dbd573f18b75039c05f6bb5536e38c2e9c5fa8f7ed6e",
+          "error": true,
+          "detail": "DIAGNOSTIC_CHECK_ERROR: one injected tool error; no acceptance command ran. Retry check with the same valid round argument."
+        },
+        {
+          "tool": "mcp__workload__check",
+          "idHash": "efbe87598488cf43b657d8d379a5d458ab2145a11a24582a52a0cf0490666cb3",
+          "error": false,
+          "detail": ""
+        }
+      ],
+      "fixedReferencePresent": true,
+      "status": 200,
+      "elapsedMs": 1172,
+      "firstContentMs": 909,
+      "usage": {
+        "input_tokens": 200,
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 5888,
+        "output_tokens": 100
+      },
+      "complete": true,
+      "stopReason": "tool_use",
+      "toolNames": [
+        "mcp__loopforge-adapter__loopforge_next"
+      ]
+    },
+    {
+      "round": 1,
+      "firstRequest": true,
+      "systemHash": "8b130e81019f45f4906e91aed24097eb5ac1b9a44074e3152f9a0a1a93e00c96",
+      "toolsHash": "7d3d2258c9baea8eef71e7c5a85b5ab6d942446cc48f8345a4ff4d772e56af64",
+      "nativeUserHash": "f7a8060858f9fe5ad2f026510e73a6accb67e5b534b7186286eaac0d611d0b84",
+      "previousPromptAbsent": true,
+      "previousToolResultAbsent": true,
+      "oldSkillBodyAbsent": true,
+      "currentToolResultPresent": false,
+      "toolErrors": [],
+      "toolResults": [],
+      "fixedReferencePresent": true,
+      "status": 200,
+      "elapsedMs": 968,
+      "firstContentMs": 649,
+      "usage": {
+        "input_tokens": 2112,
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 3072,
+        "output_tokens": 55
+      },
+      "complete": true,
+      "stopReason": "tool_use",
+      "toolNames": [
+        "mcp__workload__fixture"
+      ]
+    },
+    {
+      "round": 1,
+      "firstRequest": false,
+      "systemHash": "8b130e81019f45f4906e91aed24097eb5ac1b9a44074e3152f9a0a1a93e00c96",
+      "toolsHash": "7d3d2258c9baea8eef71e7c5a85b5ab6d942446cc48f8345a4ff4d772e56af64",
+      "nativeUserHash": "f7a8060858f9fe5ad2f026510e73a6accb67e5b534b7186286eaac0d611d0b84",
+      "previousPromptAbsent": true,
+      "previousToolResultAbsent": true,
+      "oldSkillBodyAbsent": true,
+      "currentToolResultPresent": true,
+      "toolErrors": [],
+      "toolResults": [
+        {
+          "tool": "mcp__workload__fixture",
+          "idHash": "cd4e2cdebc0953f10fb3e0adefe33b2b4174ba625cab4add380738d113ec6273",
+          "error": false,
+          "detail": ""
+        }
+      ],
+      "fixedReferencePresent": true,
+      "status": 200,
+      "elapsedMs": 641,
+      "firstContentMs": 360,
+      "usage": {
+        "input_tokens": 193,
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 5120,
+        "output_tokens": 73
+      },
+      "complete": true,
+      "stopReason": "tool_use",
+      "toolNames": [
+        "Read"
+      ]
+    },
+    {
+      "round": 1,
+      "firstRequest": false,
+      "systemHash": "8b130e81019f45f4906e91aed24097eb5ac1b9a44074e3152f9a0a1a93e00c96",
+      "toolsHash": "7d3d2258c9baea8eef71e7c5a85b5ab6d942446cc48f8345a4ff4d772e56af64",
+      "nativeUserHash": "f7a8060858f9fe5ad2f026510e73a6accb67e5b534b7186286eaac0d611d0b84",
+      "previousPromptAbsent": true,
+      "previousToolResultAbsent": true,
+      "oldSkillBodyAbsent": true,
+      "currentToolResultPresent": true,
+      "toolErrors": [],
+      "toolResults": [
+        {
+          "tool": "mcp__workload__fixture",
+          "idHash": "cd4e2cdebc0953f10fb3e0adefe33b2b4174ba625cab4add380738d113ec6273",
+          "error": false,
+          "detail": ""
+        },
+        {
+          "tool": "Read",
+          "idHash": "84737b290a9c09a1d8f6d6f5a5590c1ae2c6f955f5808f603522a9c7abceba46",
+          "error": false,
+          "detail": ""
+        }
+      ],
+      "fixedReferencePresent": true,
+      "status": 200,
+      "elapsedMs": 1955,
+      "firstContentMs": 613,
+      "usage": {
+        "input_tokens": 242,
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 5248,
+        "output_tokens": 330
+      },
+      "complete": true,
+      "stopReason": "tool_use",
+      "toolNames": [
+        "Edit"
+      ]
+    },
+    {
+      "round": 1,
+      "firstRequest": false,
+      "systemHash": "8b130e81019f45f4906e91aed24097eb5ac1b9a44074e3152f9a0a1a93e00c96",
+      "toolsHash": "7d3d2258c9baea8eef71e7c5a85b5ab6d942446cc48f8345a4ff4d772e56af64",
+      "nativeUserHash": "f7a8060858f9fe5ad2f026510e73a6accb67e5b534b7186286eaac0d611d0b84",
+      "previousPromptAbsent": true,
+      "previousToolResultAbsent": true,
+      "oldSkillBodyAbsent": true,
+      "currentToolResultPresent": true,
+      "toolErrors": [],
+      "toolResults": [
+        {
+          "tool": "mcp__workload__fixture",
+          "idHash": "cd4e2cdebc0953f10fb3e0adefe33b2b4174ba625cab4add380738d113ec6273",
+          "error": false,
+          "detail": ""
+        },
+        {
+          "tool": "Read",
+          "idHash": "84737b290a9c09a1d8f6d6f5a5590c1ae2c6f955f5808f603522a9c7abceba46",
+          "error": false,
+          "detail": ""
+        },
+        {
+          "tool": "Edit",
+          "idHash": "46888c2a1047052a2b885b783881125f86efd9dfae3faee229bf5709289d6de2",
+          "error": false,
+          "detail": ""
+        }
+      ],
+      "fixedReferencePresent": true,
+      "status": 200,
+      "elapsedMs": 829,
+      "firstContentMs": 769,
+      "usage": {
+        "input_tokens": 524,
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 5376,
+        "output_tokens": 43
+      },
+      "complete": true,
+      "stopReason": "tool_use",
+      "toolNames": [
+        "mcp__workload__check"
+      ]
+    },
+    {
+      "round": 1,
+      "firstRequest": false,
+      "systemHash": "8b130e81019f45f4906e91aed24097eb5ac1b9a44074e3152f9a0a1a93e00c96",
+      "toolsHash": "7d3d2258c9baea8eef71e7c5a85b5ab6d942446cc48f8345a4ff4d772e56af64",
+      "nativeUserHash": "f7a8060858f9fe5ad2f026510e73a6accb67e5b534b7186286eaac0d611d0b84",
+      "previousPromptAbsent": true,
+      "previousToolResultAbsent": true,
+      "oldSkillBodyAbsent": true,
+      "currentToolResultPresent": true,
+      "toolErrors": [],
+      "toolResults": [
+        {
+          "tool": "mcp__workload__fixture",
+          "idHash": "cd4e2cdebc0953f10fb3e0adefe33b2b4174ba625cab4add380738d113ec6273",
+          "error": false,
+          "detail": ""
+        },
+        {
+          "tool": "Read",
+          "idHash": "84737b290a9c09a1d8f6d6f5a5590c1ae2c6f955f5808f603522a9c7abceba46",
+          "error": false,
+          "detail": ""
+        },
+        {
+          "tool": "Edit",
+          "idHash": "46888c2a1047052a2b885b783881125f86efd9dfae3faee229bf5709289d6de2",
+          "error": false,
+          "detail": ""
+        },
+        {
+          "tool": "mcp__workload__check",
+          "idHash": "a5a22868055a7ddfc89745b7f99d3582293b8685d85bd2a18380e026e35a4eeb",
+          "error": false,
+          "detail": ""
+        }
+      ],
+      "fixedReferencePresent": true,
+      "status": 200,
+      "elapsedMs": 1094,
+      "firstContentMs": 684,
+      "usage": {
+        "input_tokens": 214,
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 5760,
+        "output_tokens": 110
+      },
+      "complete": true,
+      "stopReason": "tool_use",
+      "toolNames": [
+        "mcp__loopforge-adapter__loopforge_next"
+      ]
+    },
+    {
+      "round": 2,
+      "firstRequest": true,
+      "systemHash": "8b130e81019f45f4906e91aed24097eb5ac1b9a44074e3152f9a0a1a93e00c96",
+      "toolsHash": "7d3d2258c9baea8eef71e7c5a85b5ab6d942446cc48f8345a4ff4d772e56af64",
+      "nativeUserHash": "82354ab9740b90d61dfe3a1f2d61d0a3c4569d404be70085394ab36e2b0cdfbf",
+      "previousPromptAbsent": true,
+      "previousToolResultAbsent": true,
+      "oldSkillBodyAbsent": true,
+      "currentToolResultPresent": false,
+      "toolErrors": [],
+      "toolResults": [],
+      "fixedReferencePresent": true,
+      "status": 200,
+      "elapsedMs": 1241,
+      "firstContentMs": 1074,
+      "usage": {
+        "input_tokens": 1989,
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 3200,
+        "output_tokens": 55
+      },
+      "complete": true,
+      "stopReason": "tool_use",
+      "toolNames": [
+        "mcp__workload__fixture"
+      ]
+    },
+    {
+      "round": 2,
+      "firstRequest": false,
+      "systemHash": "8b130e81019f45f4906e91aed24097eb5ac1b9a44074e3152f9a0a1a93e00c96",
+      "toolsHash": "7d3d2258c9baea8eef71e7c5a85b5ab6d942446cc48f8345a4ff4d772e56af64",
+      "nativeUserHash": "82354ab9740b90d61dfe3a1f2d61d0a3c4569d404be70085394ab36e2b0cdfbf",
+      "previousPromptAbsent": true,
+      "previousToolResultAbsent": true,
+      "oldSkillBodyAbsent": true,
+      "currentToolResultPresent": true,
+      "toolErrors": [],
+      "toolResults": [
+        {
+          "tool": "mcp__workload__fixture",
+          "idHash": "d42c423c068a21dcc7b0809584ecea480ba596bd5492b816f8e6ddee6675d91f",
+          "error": false,
+          "detail": ""
+        }
+      ],
+      "fixedReferencePresent": true,
+      "status": 200,
+      "elapsedMs": 930,
+      "firstContentMs": 619,
+      "usage": {
+        "input_tokens": 198,
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 5120,
+        "output_tokens": 76
+      },
+      "complete": true,
+      "stopReason": "tool_use",
+      "toolNames": [
+        "Read"
+      ]
+    },
+    {
+      "round": 2,
+      "firstRequest": false,
+      "systemHash": "8b130e81019f45f4906e91aed24097eb5ac1b9a44074e3152f9a0a1a93e00c96",
+      "toolsHash": "7d3d2258c9baea8eef71e7c5a85b5ab6d942446cc48f8345a4ff4d772e56af64",
+      "nativeUserHash": "82354ab9740b90d61dfe3a1f2d61d0a3c4569d404be70085394ab36e2b0cdfbf",
+      "previousPromptAbsent": true,
+      "previousToolResultAbsent": true,
+      "oldSkillBodyAbsent": true,
+      "currentToolResultPresent": true,
+      "toolErrors": [],
+      "toolResults": [
+        {
+          "tool": "mcp__workload__fixture",
+          "idHash": "d42c423c068a21dcc7b0809584ecea480ba596bd5492b816f8e6ddee6675d91f",
+          "error": false,
+          "detail": ""
+        },
+        {
+          "tool": "Read",
+          "idHash": "492101921e2827caf2124201b2ee811d161e7cbfce35bfe0dec5d95e1ed68dac",
+          "error": false,
+          "detail": ""
+        }
+      ],
+      "fixedReferencePresent": true,
+      "status": 200,
+      "elapsedMs": 2770,
+      "firstContentMs": 1059,
+      "usage": {
+        "input_tokens": 262,
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 5376,
+        "output_tokens": 472
+      },
+      "complete": true,
+      "stopReason": "tool_use",
+      "toolNames": [
+        "Edit"
+      ]
+    },
+    {
+      "round": 2,
+      "firstRequest": false,
+      "systemHash": "8b130e81019f45f4906e91aed24097eb5ac1b9a44074e3152f9a0a1a93e00c96",
+      "toolsHash": "7d3d2258c9baea8eef71e7c5a85b5ab6d942446cc48f8345a4ff4d772e56af64",
+      "nativeUserHash": "82354ab9740b90d61dfe3a1f2d61d0a3c4569d404be70085394ab36e2b0cdfbf",
+      "previousPromptAbsent": true,
+      "previousToolResultAbsent": true,
+      "oldSkillBodyAbsent": true,
+      "currentToolResultPresent": true,
+      "toolErrors": [],
+      "toolResults": [
+        {
+          "tool": "mcp__workload__fixture",
+          "idHash": "d42c423c068a21dcc7b0809584ecea480ba596bd5492b816f8e6ddee6675d91f",
+          "error": false,
+          "detail": ""
+        },
+        {
+          "tool": "Read",
+          "idHash": "492101921e2827caf2124201b2ee811d161e7cbfce35bfe0dec5d95e1ed68dac",
+          "error": false,
+          "detail": ""
+        },
+        {
+          "tool": "Edit",
+          "idHash": "7850b7a81818340d08931ddae928e185ecbc21cb2a101eab210b4e01aab3871e",
+          "error": false,
+          "detail": ""
+        }
+      ],
+      "fixedReferencePresent": true,
+      "status": 200,
+      "elapsedMs": 654,
+      "firstContentMs": 593,
+      "usage": {
+        "input_tokens": 558,
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 5632,
+        "output_tokens": 43
+      },
+      "complete": true,
+      "stopReason": "tool_use",
+      "toolNames": [
+        "mcp__workload__check"
+      ]
+    },
+    {
+      "round": 2,
+      "firstRequest": false,
+      "systemHash": "8b130e81019f45f4906e91aed24097eb5ac1b9a44074e3152f9a0a1a93e00c96",
+      "toolsHash": "7d3d2258c9baea8eef71e7c5a85b5ab6d942446cc48f8345a4ff4d772e56af64",
+      "nativeUserHash": "82354ab9740b90d61dfe3a1f2d61d0a3c4569d404be70085394ab36e2b0cdfbf",
+      "previousPromptAbsent": true,
+      "previousToolResultAbsent": true,
+      "oldSkillBodyAbsent": true,
+      "currentToolResultPresent": true,
+      "toolErrors": [],
+      "toolResults": [
+        {
+          "tool": "mcp__workload__fixture",
+          "idHash": "d42c423c068a21dcc7b0809584ecea480ba596bd5492b816f8e6ddee6675d91f",
+          "error": false,
+          "detail": ""
+        },
+        {
+          "tool": "Read",
+          "idHash": "492101921e2827caf2124201b2ee811d161e7cbfce35bfe0dec5d95e1ed68dac",
+          "error": false,
+          "detail": ""
+        },
+        {
+          "tool": "Edit",
+          "idHash": "7850b7a81818340d08931ddae928e185ecbc21cb2a101eab210b4e01aab3871e",
+          "error": false,
+          "detail": ""
+        },
+        {
+          "tool": "mcp__workload__check",
+          "idHash": "e0c2fd004f31d08ff919ec051a970a1edf1e23c25702c48964a091d078e6343c",
+          "error": false,
+          "detail": ""
+        }
+      ],
+      "fixedReferencePresent": true,
+      "status": 200,
+      "elapsedMs": 1288,
+      "firstContentMs": 947,
+      "usage": {
+        "input_tokens": 248,
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 6016,
+        "output_tokens": 101
+      },
+      "complete": true,
+      "stopReason": "tool_use",
+      "toolNames": [
+        "mcp__loopforge-adapter__loopforge_next"
+      ]
+    }
+  ]
+}

@@ -15,6 +15,7 @@ const capabilities: HostCapabilities = {
   cleanConversation: true,
   interactiveTransport: true,
   roundMetadataDelivery: true,
+  promptDeliveryConfirmation: true,
   hardStop: true,
   workspaceContinuity: true,
   toolResultInterception: true,
@@ -285,13 +286,13 @@ test("Supervisor drives the real Claude-facing bridge through a fresh handoff", 
   }
 }));
 
-test("Supervisor refuses to mutate LoopForge when required capabilities are missing", async () => tempWorkspace(async (workspace) => {
-  const host = new FakeHost({ ...capabilities, toolResultInterception: false });
+for (const missing of ["toolResultInterception", "promptDeliveryConfirmation"] as const) test(`Supervisor refuses to mutate LoopForge without ${missing}`, async () => tempWorkspace(async (workspace) => {
+  const host = new FakeHost({ ...capabilities, [missing]: false });
   const loopforge = new FakeLoopForge([prompt("must not start", "fresh_invocation")]);
   const supervisor = new LoopForgeSupervisor({ host, loopforge, workspace });
   await assert.rejects(() => supervisor.start({ task: "do work" }), (error: unknown) => {
     assert.ok(error instanceof AutomaticBoundaryUnavailableError);
-    assert.deepEqual(error.missing, ["toolResultInterception"]);
+    assert.deepEqual(error.missing, [missing]);
     return true;
   });
   assert.deepEqual(loopforge.calls, []);

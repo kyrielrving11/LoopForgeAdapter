@@ -18,6 +18,7 @@ Usage:
 Options:
   --workspace DIR                 Agent and LoopForge runtime workspace (default: cwd)
   --mcp-config FILE               Existing Claude MCP config to extend
+  --capability-file FILE          Preload explicit UTF-8 capability documentation (repeatable)
   --claude-runtime MODE           restart (default) or reuse with native session hooks
   --loopforge-command COMMAND     LoopForge MCP command (default: loopforge)
   --loopforge-cli FILE            Use this LoopForge dist/cli.js entrypoint
@@ -45,6 +46,7 @@ export interface AdapterCliOptions {
   loopforgeCliPath?: string;
   mcpConfigPath?: string;
   claudeRuntime: "restart" | "reuse";
+  capabilityFiles: string[];
   input: Record<string, unknown>;
 }
 
@@ -85,6 +87,7 @@ export function parseCli(argv: string[], platform: NodeJS.Platform = process.pla
   let loopforgeCliPath: string | undefined;
   let mcpConfigPath: string | undefined;
   let claudeRuntime: "restart" | "reuse" = "restart";
+  const capabilityFiles: string[] = [];
   let inputJson: string | undefined;
   let inputFile: string | undefined;
   let task: string | undefined;
@@ -102,6 +105,10 @@ export function parseCli(argv: string[], platform: NodeJS.Platform = process.pla
       [workspace, index] = value(args, index, flag);
     } else if (flag === "--mcp-config") {
       [mcpConfigPath, index] = value(args, index, flag);
+    } else if (flag === "--capability-file") {
+      const [file, nextIndex] = value(args, index, flag);
+      capabilityFiles.push(path.resolve(file));
+      index = nextIndex;
     } else if (flag === "--claude-runtime") {
       const [mode, nextIndex] = value(args, index, flag);
       if (mode !== "restart" && mode !== "reuse") throw new Error("--claude-runtime must be restart or reuse");
@@ -185,6 +192,7 @@ export function parseCli(argv: string[], platform: NodeJS.Platform = process.pla
     loopforgeCommand,
     loopforgeArgs,
     claudeRuntime,
+    capabilityFiles,
     ...(loopforgeCliPath === undefined ? {} : { loopforgeCliPath }),
     ...(mcpConfigPath === undefined ? {} : { mcpConfigPath }),
     input,
@@ -261,11 +269,20 @@ async function drive(
   process.stdin.on("data", forwardInput);
   process.stdin.resume();
   try {
-    while (invocation) {
+    invocations: while (invocation) {
       for await (const event of invocation) {
         if (event.type === "output") process.stdout.write(event.data);
         if (event.type === "diagnostic") process.stderr.write(`[LoopForge Adapter] ${event.message}\n`);
         if (event.type === "exited") exitCode = event.exitCode;
+        if (event.type === "turn_ended") {
+          if (supervisor.activeInvocationId !== invocation.invocationId) continue;
+          process.stderr.write(`[LoopForge Adapter] Claude turn ended (${event.reason}); the LoopForge round is still open.\n`);
+          // Interactive users can decide how to continue. With no terminal,
+          // return control and pause through LoopForge rather than wait forever
+          // or invent a continuation/submission on the Agent's behalf.
+          if (!process.stdin.isTTY) { exitCode = 1; break invocations; }
+        }
+        if (event.type === "failed") { exitCode = 1; break invocations; }
       }
       invocation = await supervisor.nextInvocation(invocation.invocationId);
     }
@@ -294,7 +311,7 @@ export async function run(argv = process.argv.slice(2)): Promise<number> {
   }
   const loopforge = loopforgeClient(parsed);
   const supervisor = new LoopForgeSupervisor({
-    host: new ClaudeCodeDriver({ reuseProcess: parsed.claudeRuntime === "reuse" }),
+    host: new ClaudeCodeDriver({ reuseProcess: parsed.claudeRuntime === "reuse", capabilityFiles: parsed.capabilityFiles }),
     loopforge,
     workspace: parsed.workspace,
     ...(parsed.mcpConfigPath === undefined ? {} : { mcpConfigPath: parsed.mcpConfigPath }),
@@ -328,7 +345,7 @@ export async function run(argv = process.argv.slice(2)): Promise<number> {
     else if (supervisor.activeInvocation) {
       const loopId = supervisor.activeLoopIdValue;
       const paused = await supervisor.pause();
-      process.stdout.write(`Claude invocation exited; LoopForge paused${loopId ? ` (${loopId})` : ""}.\n`);
+      process.stdout.write(`Claude invocation ended without closing the round; LoopForge paused${loopId ? ` (${loopId})` : ""}.\n`);
       if (paused) printResult(paused);
       return exitCode === undefined || exitCode === 0 ? 0 : 1;
     }
@@ -341,7 +358,7 @@ export async function run(argv = process.argv.slice(2)): Promise<number> {
 }
 
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
-  void run().catch((error: unknown) => {
+  void run().then((code) => { process.exitCode = code; }).catch((error: unknown) => {
     process.stderr.write(`${error instanceof Error ? error.message : String(error)}\n`);
     process.exitCode = 1;
   });

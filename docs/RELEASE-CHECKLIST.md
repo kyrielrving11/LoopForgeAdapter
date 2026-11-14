@@ -27,12 +27,34 @@ paid model calls. Missing LoopForge or an unset Claude opt-in skips relevant
 tests; skips are not acceptance passes. `npm run test:claude` runs just the
 native Claude tests.
 
+Native CLI reliability tests also require text-only turn termination and final
+HTTP 400/401 failures to pause exactly once, return nonzero, and submit no
+round. Only those test children set `CLAUDE_CODE_MAX_RETRIES=0`; production
+preserves the user's retry policy. See the
+[reliability diagnosis](./CLAUDE-RELIABILITY.zh-CN.md) for the separate live
+model tool-error recovery experiment and its evidence limits.
+
+The native suite checks exact multiline prompt delivery and verifies that a
+corrupted startup prompt produces zero model requests. Missing/stale receipts,
+tool gating and confirmed-exit fallback are covered by unit tests. These
+checks also cover fixed source text in the first provider request after both
+clear and restart, with previous dynamic tool results absent. Units verify
+source changes force confirmed restart, deleted sources fail without a new
+host, and invalid/oversized text is never silently truncated. These checks
+do not measure task continuity or provider costs; see the separate
+[long-task comparison plan](./LONG-RUN-EVALUATION.zh-CN.md).
+
+The model-visible `SessionStart` context is a fixed projection. Verify that it
+contains only the host boundary and excludes LoopForge handles, IDs, guidance,
+round facts and changing boundary labels. The supervisor must retain the full
+structured metadata needed for routing and exact submission forwarding.
+
 `npm pack` runs `prepack` to build from a clean `dist`. The package allowlist
 includes `dist/src/`, README, public documentation and LICENSE; source and
 tests stay in GitHub. Check that no test output, keys, `.env`, Claude settings,
 temporary workspaces, dependencies or exploratory files enter the archive.
 
-## Before the first GitHub upload
+## Before a GitHub upload
 
 1. Check the [user guide](./USER-GUIDE.md) commands against `node dist/src/cli.js help`.
 2. Verify documentation links, package/lock version and license metadata.
@@ -41,7 +63,7 @@ temporary workspaces, dependencies or exploratory files enter the archive.
    and generated `.tgz` files.
 4. Use an independent repository rooted at this adapter directory. Do not
    stage from a parent directory containing LoopForge or unrelated work.
-5. Add repository URLs only after the destination is known. Record the host,
+5. Keep repository URLs accurate. Record the host,
    Node and LoopForge versions actually used for acceptance. Rerun native
    acceptance after changing supported host versions.
 

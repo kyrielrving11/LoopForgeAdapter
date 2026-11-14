@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { createHash } from "node:crypto";
 import { test } from "node:test";
 import { spawn } from "node:child_process";
 import { mkdtempSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
@@ -55,5 +56,27 @@ test("hook relay forwards execution identifiers without forwarding tool content 
     const output = JSON.parse(stdout);
     assert.equal(output.adapterAdmission, undefined);
     assert.deepEqual(output.hookSpecificOutput.updatedInput, { evaluation: "PRIVATE_EVALUATION", __loopforge_adapter_admission: "one-use" });
+  } finally { await server.close(); }
+});
+
+test("prompt receipt contains only the exact UTF-8 digest and ignores supplied digest fields", async () => {
+  const server = new ClaudeLifecycleServer();
+  let observed: ClaudeHookInput | undefined;
+  const endpoint = await server.listen((input) => { observed = input; return {}; });
+  const prompt = "PRIVATE_PROMPT 中文 🧪\n  indentation\r\ntrailing space ";
+  try {
+    const child = spawn(process.execPath, [path.resolve("dist/src/hosts/claude-hook.js")], {
+      env: { ...process.env, LOOPFORGE_CLAUDE_HOOK_ENDPOINT: endpoint.address, LOOPFORGE_CLAUDE_HOOK_TOKEN: endpoint.token }, windowsHide: true,
+    });
+    let stdout = "";
+    child.stdout.setEncoding("utf8"); child.stdout.on("data", (data) => { stdout += data; });
+    child.stdin.end(JSON.stringify({ hook_event_name: "UserPromptSubmit", session_id: "native", cwd: "/work", prompt,
+      promptHash: "do-not-trust", transcript_path: "PRIVATE_TRACE" }));
+    const exitCode = await new Promise<number | null>((resolve) => child.once("exit", resolve));
+    assert.equal(exitCode, 0);
+    assert.deepEqual(observed, { hook_event_name: "UserPromptSubmit", session_id: "native", cwd: "/work",
+      promptHash: createHash("sha256").update(prompt, "utf8").digest("hex"), background: false });
+    assert.ok(!JSON.stringify(observed).includes("PRIVATE_"));
+    assert.deepEqual(JSON.parse(stdout), {});
   } finally { await server.close(); }
 });

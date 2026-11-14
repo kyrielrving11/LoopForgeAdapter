@@ -1,0 +1,294 @@
+{
+  "measuredAt": "2026-11-13T13:19:06.104Z",
+  "mode": "local-scripted-no-cost-measurement",
+  "stableUser": true,
+  "fault": "legacy-crash",
+  "passed": false,
+  "failure": "MCP fixture exited after invalid arguments; no check ran",
+  "elapsedMs": 8561,
+  "artificialRoundDelayMs": 0,
+  "hostStarts": 1,
+  "mcpStarts": 1,
+  "nativeSessionHashes": [],
+  "checks": [],
+  "serviceErrors": [
+    {
+      "kind": "argument-error",
+      "tool": "check"
+    },
+    {
+      "kind": "fatal"
+    }
+  ],
+  "serviceEvents": [
+    {
+      "kind": "start"
+    },
+    {
+      "kind": "received",
+      "tool": "fixture",
+      "round": 0
+    },
+    {
+      "kind": "fixture",
+      "round": 0
+    },
+    {
+      "kind": "received",
+      "tool": "check",
+      "round": 9
+    },
+    {
+      "kind": "argument-error",
+      "tool": "check"
+    },
+    {
+      "kind": "fatal"
+    },
+    {
+      "kind": "exit",
+      "code": 1
+    }
+  ],
+  "finalSourceHash": "11d4850ebe40faf8827a5ffa4b57dc141ef09cc174b35a328d3be72e0add4fbb",
+  "measurements": [
+    {
+      "round": 0,
+      "firstRequest": true,
+      "systemHash": "e5649b193e7b8f05c0798796e7ba7622c98c1a26951aac764014aed5d1631ec7",
+      "toolsHash": "7d3d2258c9baea8eef71e7c5a85b5ab6d942446cc48f8345a4ff4d772e56af64",
+      "nativeUserHash": "4e773e50ada46dc0104923caad021e28c46c0c26a510ff60032a1aa4aaa66c33",
+      "previousPromptAbsent": true,
+      "previousToolResultAbsent": true,
+      "oldSkillBodyAbsent": true,
+      "currentToolResultPresent": false,
+      "toolErrors": [],
+      "toolResults": [],
+      "fixedReferencePresent": true,
+      "status": 200,
+      "elapsedMs": 13,
+      "firstContentMs": null,
+      "usage": null,
+      "complete": true,
+      "stopReason": "tool_use",
+      "toolNames": [
+        "Skill"
+      ]
+    },
+    {
+      "round": 0,
+      "firstRequest": false,
+      "systemHash": "e5649b193e7b8f05c0798796e7ba7622c98c1a26951aac764014aed5d1631ec7",
+      "toolsHash": "7d3d2258c9baea8eef71e7c5a85b5ab6d942446cc48f8345a4ff4d772e56af64",
+      "nativeUserHash": "4e773e50ada46dc0104923caad021e28c46c0c26a510ff60032a1aa4aaa66c33",
+      "previousPromptAbsent": true,
+      "previousToolResultAbsent": true,
+      "oldSkillBodyAbsent": false,
+      "currentToolResultPresent": false,
+      "toolErrors": [],
+      "toolResults": [
+        {
+          "tool": "Skill",
+          "idHash": "64bd2d419d62409167b83582f7300e316e7c8e2a8cd7c5c374c2af6b8f547784",
+          "error": false,
+          "detail": ""
+        }
+      ],
+      "fixedReferencePresent": true,
+      "status": 200,
+      "elapsedMs": 3,
+      "firstContentMs": null,
+      "usage": null,
+      "complete": true,
+      "stopReason": "tool_use",
+      "toolNames": [
+        "mcp__workload__fixture"
+      ]
+    },
+    {
+      "round": 0,
+      "firstRequest": false,
+      "systemHash": "e5649b193e7b8f05c0798796e7ba7622c98c1a26951aac764014aed5d1631ec7",
+      "toolsHash": "7d3d2258c9baea8eef71e7c5a85b5ab6d942446cc48f8345a4ff4d772e56af64",
+      "nativeUserHash": "4e773e50ada46dc0104923caad021e28c46c0c26a510ff60032a1aa4aaa66c33",
+      "previousPromptAbsent": true,
+      "previousToolResultAbsent": true,
+      "oldSkillBodyAbsent": false,
+      "currentToolResultPresent": true,
+      "toolErrors": [],
+      "toolResults": [
+        {
+          "tool": "Skill",
+          "idHash": "64bd2d419d62409167b83582f7300e316e7c8e2a8cd7c5c374c2af6b8f547784",
+          "error": false,
+          "detail": ""
+        },
+        {
+          "tool": "mcp__workload__fixture",
+          "idHash": "1259b361ecc848e1065dc38390ffa98dfc216c342980f9e00cb906363ff509c4",
+          "error": false,
+          "detail": ""
+        }
+      ],
+      "fixedReferencePresent": true,
+      "status": 200,
+      "elapsedMs": 4,
+      "firstContentMs": null,
+      "usage": null,
+      "complete": true,
+      "stopReason": "tool_use",
+      "toolNames": [
+        "Write"
+      ]
+    },
+    {
+      "round": 0,
+      "firstRequest": false,
+      "systemHash": "e5649b193e7b8f05c0798796e7ba7622c98c1a26951aac764014aed5d1631ec7",
+      "toolsHash": "7d3d2258c9baea8eef71e7c5a85b5ab6d942446cc48f8345a4ff4d772e56af64",
+      "nativeUserHash": "4e773e50ada46dc0104923caad021e28c46c0c26a510ff60032a1aa4aaa66c33",
+      "previousPromptAbsent": true,
+      "previousToolResultAbsent": true,
+      "oldSkillBodyAbsent": false,
+      "currentToolResultPresent": true,
+      "toolErrors": [],
+      "toolResults": [
+        {
+          "tool": "Skill",
+          "idHash": "64bd2d419d62409167b83582f7300e316e7c8e2a8cd7c5c374c2af6b8f547784",
+          "error": false,
+          "detail": ""
+        },
+        {
+          "tool": "mcp__workload__fixture",
+          "idHash": "1259b361ecc848e1065dc38390ffa98dfc216c342980f9e00cb906363ff509c4",
+          "error": false,
+          "detail": ""
+        },
+        {
+          "tool": "Write",
+          "idHash": "7e386b8fbdd2f9d7b7a587702ec0a55673f9d31548a1b4a5513f34e48aeb1e46",
+          "error": false,
+          "detail": ""
+        }
+      ],
+      "fixedReferencePresent": true,
+      "status": 200,
+      "elapsedMs": 10,
+      "firstContentMs": null,
+      "usage": null,
+      "complete": true,
+      "stopReason": "tool_use",
+      "toolNames": [
+        "mcp__workload__check"
+      ]
+    },
+    {
+      "round": 0,
+      "firstRequest": false,
+      "systemHash": "e5649b193e7b8f05c0798796e7ba7622c98c1a26951aac764014aed5d1631ec7",
+      "toolsHash": "7d3d2258c9baea8eef71e7c5a85b5ab6d942446cc48f8345a4ff4d772e56af64",
+      "nativeUserHash": "4e773e50ada46dc0104923caad021e28c46c0c26a510ff60032a1aa4aaa66c33",
+      "previousPromptAbsent": true,
+      "previousToolResultAbsent": true,
+      "oldSkillBodyAbsent": false,
+      "currentToolResultPresent": true,
+      "toolErrors": [
+        "Connection closed"
+      ],
+      "toolResults": [
+        {
+          "tool": "Skill",
+          "idHash": "64bd2d419d62409167b83582f7300e316e7c8e2a8cd7c5c374c2af6b8f547784",
+          "error": false,
+          "detail": ""
+        },
+        {
+          "tool": "mcp__workload__fixture",
+          "idHash": "1259b361ecc848e1065dc38390ffa98dfc216c342980f9e00cb906363ff509c4",
+          "error": false,
+          "detail": ""
+        },
+        {
+          "tool": "Write",
+          "idHash": "7e386b8fbdd2f9d7b7a587702ec0a55673f9d31548a1b4a5513f34e48aeb1e46",
+          "error": false,
+          "detail": ""
+        },
+        {
+          "tool": "mcp__workload__check",
+          "idHash": "6aacd0fd8f0ac44bdc5c1e7f9ae5f03b390021536223bad561a420a1bbd00f4c",
+          "error": true,
+          "detail": "Connection closed"
+        }
+      ],
+      "fixedReferencePresent": true,
+      "status": 200,
+      "elapsedMs": 6,
+      "firstContentMs": null,
+      "usage": null,
+      "complete": true,
+      "stopReason": "tool_use",
+      "toolNames": [
+        "mcp__workload__check"
+      ]
+    },
+    {
+      "round": 0,
+      "firstRequest": false,
+      "systemHash": "e5649b193e7b8f05c0798796e7ba7622c98c1a26951aac764014aed5d1631ec7",
+      "toolsHash": "7d3d2258c9baea8eef71e7c5a85b5ab6d942446cc48f8345a4ff4d772e56af64",
+      "nativeUserHash": "4e773e50ada46dc0104923caad021e28c46c0c26a510ff60032a1aa4aaa66c33",
+      "previousPromptAbsent": true,
+      "previousToolResultAbsent": true,
+      "oldSkillBodyAbsent": false,
+      "currentToolResultPresent": true,
+      "toolErrors": [
+        "Connection closed",
+        "<tool_use_error>Error: No such tool available: mcp__workload__check. Its MCP server 'workload' has disconnected. Continue without this tool; it becomes callable again only if the server reconnects.</tool_use_error>"
+      ],
+      "toolResults": [
+        {
+          "tool": "Skill",
+          "idHash": "64bd2d419d62409167b83582f7300e316e7c8e2a8cd7c5c374c2af6b8f547784",
+          "error": false,
+          "detail": ""
+        },
+        {
+          "tool": "mcp__workload__fixture",
+          "idHash": "1259b361ecc848e1065dc38390ffa98dfc216c342980f9e00cb906363ff509c4",
+          "error": false,
+          "detail": ""
+        },
+        {
+          "tool": "Write",
+          "idHash": "7e386b8fbdd2f9d7b7a587702ec0a55673f9d31548a1b4a5513f34e48aeb1e46",
+          "error": false,
+          "detail": ""
+        },
+        {
+          "tool": "mcp__workload__check",
+          "idHash": "6aacd0fd8f0ac44bdc5c1e7f9ae5f03b390021536223bad561a420a1bbd00f4c",
+          "error": true,
+          "detail": "Connection closed"
+        },
+        {
+          "tool": "mcp__workload__check",
+          "idHash": "80386d5f32974489e6ca344d6c6be4dcb633ec9aed5159f16250c77634bd6cb2",
+          "error": true,
+          "detail": "<tool_use_error>Error: No such tool available: mcp__workload__check. Its MCP server 'workload' has disconnected. Continue without this tool; it becomes callable again only if the server reconnects.</tool_use_error>"
+        }
+      ],
+      "fixedReferencePresent": true,
+      "status": 200,
+      "elapsedMs": 5,
+      "firstContentMs": null,
+      "usage": null,
+      "complete": true,
+      "stopReason": "tool_use",
+      "toolNames": [
+        "mcp__loopforge-adapter__loopforge_next"
+      ]
+    }
+  ]
+}

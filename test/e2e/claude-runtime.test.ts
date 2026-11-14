@@ -12,6 +12,115 @@ import type { LoopForgeMcpClient } from "../../src/mcp/bridge.js";
 const enabled = process.env.CLAUDE_RUNTIME_E2E === "1";
 const require = createRequire(import.meta.url);
 
+for (const reuseProcess of [true, false]) test(`real Claude ${reuseProcess ? "clear" : "restart"} preserves fixed source references in the first request without carrying old tool results`, { skip: !enabled, timeout: 60000 }, async () => {
+  const directory = mkdtempSync(path.join(os.tmpdir(), "loopforge-fixed-capability-"));
+  const workspace = path.join(directory, "workspace");
+  const config = path.join(directory, "config");
+  mkdirSync(workspace); mkdirSync(config);
+  writeFileSync(path.join(config, ".claude.json"), JSON.stringify({ hasCompletedOnboarding: true,
+    projects: { [workspace.replaceAll("\\", "/")]: { hasTrustDialogAccepted: true } },
+  }));
+  const reference = path.join(directory, "SKILL.md");
+  const toolReference = path.join(directory, "tools.md");
+  const original = "---\r\nname: fixed-probe\r\ndescription: Static reference probe\r\n---\r\nFIXED_SOURCE_93c 中文 🧪\r\n  original indentation \r\n";
+  writeFileSync(reference, original);
+  writeFileSync(toolReference, "FIXED_TOOL_REFERENCE_a27\nUse the current live schema for arguments.\n");
+  const oldOutput = path.join(workspace, "old-output.txt");
+  writeFileSync(oldOutput, "OLD_DYNAMIC_TOOL_RESULT_f82");
+  const firstPrompt = "FIRST_FIXED_ROUND_c17";
+  const nextPrompt = "NEXT_FIXED_ROUND_d25";
+  const requests: Array<{ system: string; messages: string; selectedTool: string }> = [];
+  const snapshots: string[] = [];
+  let probeReject!: (error: Error) => void;
+  const failed = new Promise<never>((_, reject) => { probeReject = reject; });
+  void failed.catch(() => undefined);
+  const server = createServer(async (request, response) => {
+    if (!request.url?.split("?")[0]?.endsWith("/messages")) { response.setHeader("content-type", "application/json"); response.end('{"input_tokens":100}'); return; }
+    let body = "";
+    for await (const chunk of request) body += String(chunk);
+    const input = JSON.parse(body) as { model: string; messages: unknown[]; system?: string | Array<{ text?: string }>; tools?: Array<{ name: string }> };
+    const system = typeof input.system === "string" ? input.system : (input.system ?? []).map((block) => block.text ?? "").join("\n");
+    const messages = JSON.stringify(input.messages);
+    const needsOldRead = !messages.includes(nextPrompt) && !messages.includes("OLD_DYNAMIC_TOOL_RESULT_f82");
+    const tool = (input.tools ?? []).find(({ name }) => needsOldRead ? name === "Read" : name.endsWith("loopforge_next"))?.name;
+    requests.push({ system, messages, selectedTool: tool ?? "" });
+    if (!tool || requests.length > 5) {
+      probeReject(new Error("Unexpected capability probe request or missing tool"));
+      response.statusCode = 400; response.end('{"type":"error","error":{"type":"invalid_request_error","message":"Probe failed"}}'); return;
+    }
+    response.writeHead(200, { "content-type": "text/event-stream" });
+    const send = (event: Record<string, unknown>) => response.write(`event: ${event.type}\ndata: ${JSON.stringify(event)}\n\n`);
+    send({ type: "message_start", message: { id: `fixed_${requests.length}`, type: "message", role: "assistant", model: input.model, content: [], stop_reason: null, stop_sequence: null, usage: { input_tokens: 100, output_tokens: 0 } } });
+    send({ type: "content_block_start", index: 0, content_block: { type: "tool_use", id: `fixed_tool_${requests.length}`, name: tool, input: {} } });
+    send({ type: "content_block_delta", index: 0, delta: { type: "input_json_delta", partial_json: JSON.stringify(needsOldRead ? { file_path: oldOutput } : {}) } });
+    send({ type: "content_block_stop", index: 0 });
+    send({ type: "message_delta", delta: { stop_reason: "tool_use", stop_sequence: null }, usage: { output_tokens: 1 } });
+    send({ type: "message_stop" }); response.end();
+  });
+  await new Promise<void>((resolve) => server.listen(0, "127.0.0.1", resolve));
+  const address = server.address();
+  assert.ok(address && typeof address !== "string");
+  const prompt = (text: string, submissionHandle: string) => ({ content: [
+    { type: "text", text }, { type: "text", text: JSON.stringify({ contextMode: "fresh_invocation", contextReason: "round_boundary", sessionId: "lf-session", loopId: "lf-loop", submissionHandle }) },
+  ] });
+  let submissions = 0;
+  const loopforge: LoopForgeMcpClient = {
+    async listTools() { return [{ name: "loopforge_next", description: "Submit work", inputSchema: { type: "object", properties: {} } }]; },
+    async callTool(name) {
+      if (name === "loopforge_start") return prompt(firstPrompt, "OLD_FIXED_HANDLE_8c1");
+      return ++submissions === 1 ? prompt(nextPrompt, "NEW_FIXED_HANDLE_b91") : { content: [{ type: "text", text: '{"ok":true,"stopReason":"completed"}' }] };
+    },
+  };
+  const nodePty = require("node-pty") as { spawn: PtyFactory };
+  let terminal = "";
+  const driver = new ClaudeCodeDriver({
+    reuseProcess, capabilityFiles: [reference, toolReference],
+    executable: process.env.CLAUDE_EXECUTABLE ?? (process.platform === "win32"
+      ? path.join(process.env.APPDATA!, "npm/node_modules/@anthropic-ai/claude-code/bin/claude.exe") : "claude"),
+    ptyFactory: (file, args, options) => {
+      snapshots.push(readFileSync(args[args.indexOf("--append-system-prompt-file") + 1]!, "utf8"));
+      const child = nodePty.spawn(file, [...args, "--tools", "Read,Skill", "--permission-mode", "dontAsk", "--ax-screen-reader", "--allowedTools=Read,Skill,mcp__loopforge-adapter__loopforge_next"], options);
+      child.onData((data) => { terminal += data; }); return child;
+    },
+  });
+  let terminalResolve!: () => void;
+  const completed = new Promise<void>((resolve) => { terminalResolve = resolve; });
+  const supervisor = new LoopForgeSupervisor({ host: driver, loopforge, workspace,
+    env: { CLAUDE_CONFIG_DIR: config, ANTHROPIC_BASE_URL: `http://127.0.0.1:${address.port}`, ANTHROPIC_AUTH_TOKEN: "local-probe", ANTHROPIC_API_KEY: "",
+      ANTHROPIC_MODEL: "deepseek-flash[1m]", ENABLE_TOOL_SEARCH: "false", DISABLE_AUTOUPDATER: "1", CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC: "1" },
+    onTerminalResult: () => terminalResolve(),
+  });
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  try {
+    await supervisor.start({ task: "fixed capability probe" });
+    await Promise.race([completed, failed, new Promise((_, reject) => { timer = setTimeout(() => reject(new Error(`Fixed background timed out; requests=${requests.length}; terminal=${terminal.slice(-2000)}`)), 35000); })]);
+    assert.equal(submissions, 2);
+    assert.equal(snapshots.length, reuseProcess ? 1 : 2);
+    assert.ok(snapshots.every((text) => text === snapshots[0]), "unchanged sources produce identical background bytes");
+    assert.equal(requests.length, 3, "only the deliberate dynamic Read and two submissions are needed");
+    assert.deepEqual(requests.map((entry) => entry.selectedTool === "Read" ? "Read" : "loopforge_next"), ["Read", "loopforge_next", "loopforge_next"]);
+    for (const entry of requests) {
+      assert.ok(entry.system.includes(original), "complete source is already available in system context");
+      assert.ok(entry.system.includes(snapshots[0]!.trimEnd()), "the same complete background reaches both conversations");
+      assert.ok(entry.system.includes("FIXED_TOOL_REFERENCE_a27"));
+      assert.ok(!entry.messages.includes("FIXED_SOURCE_93c"), "fixed references are not appended to the round prompt or tool history");
+    }
+    const next = requests.find((entry) => entry.messages.includes(nextPrompt))!;
+    assert.ok(next, "new round must reach the provider");
+    for (const old of [firstPrompt, "OLD_FIXED_HANDLE_8c1", "OLD_DYNAMIC_TOOL_RESULT_f82"]) {
+      assert.ok(!next.messages.includes(old) && !next.system.includes(old), "old conversation content must be absent");
+    }
+    assert.ok(requests.some((entry) => entry.messages.includes("OLD_DYNAMIC_TOOL_RESULT_f82")));
+    assert.equal(readFileSync(reference, "utf8"), original, "original source is never rewritten");
+    console.log(JSON.stringify({ fixedBackgroundFirstRequestVerified: true, cleanToolHistoryVerified: true, reuseProcess, hostStarts: snapshots.length }));
+  } finally {
+    if (timer) clearTimeout(timer);
+    await supervisor.stop("adapter_error");
+    server.closeAllConnections(); await new Promise<void>((resolve) => server.close(() => resolve()));
+    rmSync(directory, { recursive: true, force: true });
+  }
+});
+
 for (const reuseProcess of [true, false]) test(`real Claude ${reuseProcess ? "reuses" : "restarts"} its host with isolated hooks, memory, tools and subagents`, { skip: !enabled, timeout: 60000 }, async () => {
   const directory = mkdtempSync(path.join(os.tmpdir(), "loopforge-claude-acceptance-"));
   const workspace = path.join(directory, "workspace");
@@ -57,6 +166,8 @@ require('node:readline').createInterface({input:process.stdin}).on('line',line=>
 
   const firstMarker = "FIRST_CONTEXT_PRIVATE_83b19";
   const nextMarker = "NEXT_CONTEXT_PRIVATE_62a87";
+  const firstPrompt = `${firstMarker}\n中文启动提示 🧪\n  preserve indentation`;
+  const nextPrompt = `${nextMarker}\n${"  中文多行提示 🧪: exact spacing and punctuation.\n".repeat(256)}end of exact prompt`;
   const retryMarker = "SAME_ROUND_RETRY_c18aa";
   const requests: Array<{ context: string; toolNames: string[]; toolSchema: string }> = [];
   let probeReject!: (error: Error) => void;
@@ -126,13 +237,13 @@ require('node:readline').createInterface({input:process.stdin}).on('line',line=>
   const loopforge: LoopForgeMcpClient = {
     async listTools() { return [{ name: "loopforge_next", description: "Submit work", inputSchema: { type: "object", properties: {} } }]; },
     async callTool(name, args) {
-      if (name === "loopforge_start") return prompt(firstMarker, "OLD_HANDLE_751");
+      if (name === "loopforge_start") return prompt(firstPrompt, "OLD_HANDLE_751");
       assert.deepEqual(args, {}, "transport admission must not enter LoopForge arguments");
       const executions = existsSync(mcpLog) ? readFileSync(mcpLog, "utf8").split(/\r?\n/) : [];
       assert.equal(executions.filter((line) => line.startsWith("call:")).length, executions.filter((line) => line.startsWith("done:")).length, "no LoopForge call may run while an external tool is still active");
       submissions++;
       if (submissions === 1) return prompt(retryMarker, "OLD_HANDLE_751", "same_round_retry");
-      if (submissions === 2) return prompt(nextMarker, "NEW_HANDLE_928");
+      if (submissions === 2) return prompt(nextPrompt, "NEW_HANDLE_928");
       return { content: [{ type: "text", text: '{"ok":true,"stopReason":"completed"}' }] };
     },
   };
@@ -174,13 +285,15 @@ require('node:readline').createInterface({input:process.stdin}).on('line',line=>
     const nextRequests = requests.filter((request) => request.context.includes(nextMarker));
     assert.ok(nextRequests.length > 0);
     for (const request of nextRequests) {
+      assert.ok(request.context.includes(JSON.stringify(nextPrompt).slice(1, -1)), "the complete multiline prompt must reach the API");
       assert.ok(!request.context.includes(firstMarker));
       assert.ok(!request.context.includes(retryMarker));
       assert.ok(!request.context.includes("OLD_HANDLE_751"));
       assert.ok(!request.context.includes("EXTERNAL_CALL_1"));
       assert.ok(!request.context.includes("FOREGROUND_CHILD_DONE_624"));
       assert.ok(!request.context.includes("FOREGROUND_CHILD_PROBE_624"));
-      assert.ok(request.context.includes("NEW_HANDLE_928"));
+      assert.ok(request.context.includes("current_prompt_and_live_mcp_schema"), "fixed host context must be present");
+      assert.ok(!request.context.includes("NEW_HANDLE_928"), "submission handles must stay out of model context");
     }
     assert.ok(requests.some((request) => request.context.includes(firstMarker) && request.context.includes(retryMarker)));
     const mcpEvents = readFileSync(mcpLog, "utf8").trim().split(/\r?\n/);
@@ -190,6 +303,46 @@ require('node:readline').createInterface({input:process.stdin}).on('line',line=>
   } finally {
     if (timer) clearTimeout(timer);
     await supervisor.stop("adapter_error");
+    server.closeAllConnections();
+    await new Promise<void>((resolve) => server.close(() => resolve()));
+    rmSync(directory, { recursive: true, force: true });
+  }
+});
+
+test("real Claude blocks a corrupted initial prompt before any model request", { skip: !enabled, timeout: 30000 }, async () => {
+  const directory = mkdtempSync(path.join(os.tmpdir(), "loopforge-corrupt-prompt-"));
+  const workspace = path.join(directory, "workspace");
+  const config = path.join(directory, "config");
+  mkdirSync(workspace); mkdirSync(config);
+  writeFileSync(path.join(config, ".claude.json"), JSON.stringify({ hasCompletedOnboarding: true,
+    projects: { [workspace.replaceAll("\\", "/")]: { hasTrustDialogAccepted: true } },
+  }));
+  let modelRequests = 0;
+  const server = createServer((request, response) => {
+    if (request.url?.split("?")[0]?.endsWith("/messages")) modelRequests++;
+    response.setHeader("content-type", "application/json"); response.end('{"input_tokens":100}');
+  });
+  await new Promise<void>((resolve) => server.listen(0, "127.0.0.1", resolve));
+  const address = server.address();
+  assert.ok(address && typeof address !== "string");
+  const nodePty = require("node-pty") as { spawn: PtyFactory };
+  const driver = new ClaudeCodeDriver({
+    executable: process.env.CLAUDE_EXECUTABLE ?? (process.platform === "win32"
+      ? path.join(process.env.APPDATA!, "npm/node_modules/@anthropic-ai/claude-code/bin/claude.exe") : "claude"),
+    ptyFactory: (file, args, options) => nodePty.spawn(file,
+      [...args.slice(0, -1), `${args.at(-1)} CORRUPTED`, "--permission-mode", "dontAsk", "--ax-screen-reader"], options),
+  });
+  let handle: Awaited<ReturnType<typeof driver.startInvocation>> | undefined;
+  try {
+    await assert.rejects(async () => {
+      handle = await driver.startInvocation({ prompt: "Exact LoopForge input 中文 🧪", metadata: { contextMode: "fresh_invocation", contextReason: "test" }, workspace,
+        env: { CLAUDE_CONFIG_DIR: config, ANTHROPIC_BASE_URL: `http://127.0.0.1:${address.port}`, ANTHROPIC_AUTH_TOKEN: "local-probe", ANTHROPIC_API_KEY: "",
+          ANTHROPIC_MODEL: "deepseek-flash[1m]", DISABLE_AUTOUPDATER: "1", CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC: "1" },
+      });
+    }, /submitted prompt does not match/);
+    assert.equal(modelRequests, 0);
+  } finally {
+    if (handle) await driver.stopInvocation(handle, "terminal");
     server.closeAllConnections();
     await new Promise<void>((resolve) => server.close(() => resolve()));
     rmSync(directory, { recursive: true, force: true });
