@@ -1,0 +1,39 @@
+{
+  "measuredAt": "2026-11-14T05:58:07.224Z",
+  "status": "completed",
+  "fixtureCommit": "f1ba827e566037ae01b056bdcfa9253920f2a139",
+  "taskSha256": "48410e5cdac11b1c5ddc02e626a649ae940506d1cbf12c6c73ddce35b7ca7fb3",
+  "sequence": [
+    "A0",
+    "B0"
+  ],
+  "budgets": {
+    "executionMs": 900000,
+    "requestsPerRun": 64,
+    "outputTokensPerRequest": 4096,
+    "measuredInputTokensPerRun": 500000,
+    "outputTokensPerRun": 32768,
+    "providerCostUsd": "unknown"
+  },
+  "results": [
+    {
+      "id": "A0",
+      "mode": "restart",
+      "status": "completed",
+      "elapsedMs": 137564,
+      "requests": 19,
+      "rounds": 1,
+      "finalAcceptance": true
+    },
+    {
+      "id": "B0",
+      "mode": "reuse",
+      "status": "completed",
+      "elapsedMs": 117613,
+      "requests": 19,
+      "rounds": 1,
+      "finalAcceptance": true
+    }
+  ],
+  "conclusion": "Both tasks completed in one LoopForge round with machine-backed success and independent final acceptance. Long-round evidence is insufficient; no host-reuse conclusion is supported because neither run crossed a round boundary. Do not treat this feasibility pair as the three paired comparison samples."
+}

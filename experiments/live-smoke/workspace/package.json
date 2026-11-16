@@ -1,0 +1,5 @@
+{
+  "name": "loopforge-live-smoke",
+  "private": true,
+  "type": "module"
+}

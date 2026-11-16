@@ -33,9 +33,13 @@ export async function startAnthropicProbe(options: {
   upstream?: URL;
   stableUserId?: string;
   maximumRequests: number;
-  maximumOutputTokens: number;
+  /** Optional test-only request cap. Omit for an uncapped provider relay. */
+  maximumOutputTokens?: number;
+  /** Abort a provider request that stops producing a response. */
+  requestTimeoutMs?: number;
   inspect(input: ProbeRequest): void;
   measured(measurement: ProbeMeasurement): void;
+  onFailure?(measurement: ProbeMeasurement): void;
   localReply?(input: ProbeRequest): { name: string; input: Record<string, unknown> } | { text: string };
 }) {
   let reject!: (error: Error) => void;
@@ -49,7 +53,8 @@ export async function startAnthropicProbe(options: {
     }
     const started = performance.now();
     const abort = new AbortController(); pending.add(abort);
-    const timeout = setTimeout(() => abort.abort(), 45000);
+    const requestTimeoutMs = options.requestTimeoutMs ?? 45000;
+    const timeout = setTimeout(() => abort.abort(), requestTimeoutMs);
     const measurement: ProbeMeasurement = { status: 0, elapsedMs: 0, firstContentMs: null, usage: null, complete: false, stopReason: null, toolNames: [] };
     try {
       if (++count > options.maximumRequests) throw new Error("Probe request limit reached");
@@ -59,7 +64,12 @@ export async function startAnthropicProbe(options: {
         if (Buffer.byteLength(body) > 2 * 1024 * 1024) throw new Error("Probe body limit reached");
       }
       const input = JSON.parse(body) as ProbeRequest;
-      assert.ok(typeof input.max_tokens === "number" && input.max_tokens <= options.maximumOutputTokens, "Native output limit must apply before forwarding");
+      if (typeof input.max_tokens !== "number") {
+        throw new Error("Request output-token value missing");
+      }
+      if (options.maximumOutputTokens !== undefined && input.max_tokens > options.maximumOutputTokens) {
+        throw new Error(`Request output-token limit exceeded (${String(input.max_tokens)} > ${options.maximumOutputTokens})`);
+      }
       options.inspect(input);
       if (options.stableUserId) { input.metadata = { ...input.metadata, user_id: options.stableUserId }; body = JSON.stringify(input); }
       if (!options.upstream) {
@@ -110,8 +120,16 @@ export async function startAnthropicProbe(options: {
       measurement.elapsedMs = Math.round(performance.now() - started); options.measured(measurement); response.end();
       if (!measurement.complete) throw new Error("Provider incomplete stream");
     } catch (error) {
+      measurement.elapsedMs = Math.round(performance.now() - started);
+      options.onFailure?.(measurement);
       response.destroy();
-      reject(new Error(error instanceof Error && /^(Probe|Provider)/.test(error.message) ? error.message : "Experiment request failed; details withheld"));
+      const message = abort.signal.aborted
+        ? `Provider request timed out after ${requestTimeoutMs}ms`
+        : error instanceof Error ? error.message : String(error);
+      const safe = /^(Probe|Provider|Request output-token|Unexpected token|Unexpected end)/.test(message)
+        ? message
+        : "Experiment request failed; details withheld";
+      reject(new Error(safe));
     } finally { clearTimeout(timeout); pending.delete(abort); }
   });
   server.listen(0, "127.0.0.1"); await once(server, "listening");

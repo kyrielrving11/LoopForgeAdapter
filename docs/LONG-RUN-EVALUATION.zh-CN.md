@@ -1,7 +1,8 @@
 # 长任务对照实验方案
 
-状态：方案已准备，真实模型长任务尚未执行。现有本地脚本 API 测试
-只证明工程边界，不提供模型能力、真实 token 或 KV 缓存收益结论。
+状态：LoopForge 4.1.0 兼容性回归和预定三对序列已完成。4.1.0 的全量
+测试、适配器回归均通过；有效样本仍主要只提交 1 轮，或在第一次提交前
+被 provider 预算打断，因此没有得到宿主复用收益或连续性结论。
 
 ## 要回答的问题
 
@@ -15,8 +16,8 @@
 
 ## 固定任务与实验夹具
 
-准备一个独立的 TypeScript 示例项目，不在 LoopForge 或适配器源码
-目录中执行任务。固定目标如下，作为新 loop 的 operator 输入：
+使用独立的 TypeScript 示例项目，不在 LoopForge 或适配器源码目录中
+执行任务。固定目标如下，作为新 loop 的 operator 输入：
 
 > 实现一个本地依赖任务运行器。输入为 JSON 任务图；校验重复 ID、
 > 缺失依赖和环；按确定顺序调度可运行任务，遵守并发限制；支持失败
@@ -35,8 +36,17 @@
 - 按当前 LoopForge 支持的配置绑定独立 after-phase 验证命令，固定
   测试入口及配置。Agent 的成功报告不代替命令观察。
 
-这些夹具目前不是本仓库已经提供的可执行基准。冻结后记录其提交
-哈希、任务文本哈希及验证命令；首轮试跑只检查夹具可运行性。
+夹具位于 `C:/Users/Dell/Desktop/Loopforge/long-run-fixture`。4.0.8 基线
+提交为 `f1ba827e566037ae01b056bdcfa9253920f2a139`；LoopForge 4.1.0
+要求 policy schema 11，因此正式 4.1.0 样本使用重新冻结的提交
+`cf36b455dfa6f814360bea45e81687e482adcdb9`（仅将 `loop_policy.json`
+的版本从 10 改为 11）。首轮源文件只有类型和 API 桩；基线
+`tsc -p tsconfig.json` 通过，完整 acceptance 按预期失败。
+正式可行性任务文本 SHA-256 为
+`48410e5cdac11b1c5ddc02e626a649ae940506d1cbf12c6c73ddce35b7ca7fb3`。
+after-phase 命令为 `node scripts/acceptance-runner.cjs`；它先构建再运行
+固定验收。每轮 MCP `check` 调用同一入口。独立终验命令为
+`node scripts/final-acceptance.cjs`。
 如果试跑暴露规范问题，修订后重新冻结，不在正式比较中途改题。
 
 ## 对照条件
@@ -54,10 +64,81 @@
 取得三对样本。每次都从冻结夹具开始，不能把前一组完成的代码或
 工具服务内存带进后一组。每个 run 中服务按本组宿主模式正常存活。
 
-每次可设置 `--max-rounds 30` 作为上限，同时固定相同的外部时间
-和模型费用预算。上限不是要求完成 30 轮：不得人为切小工作或强迫
-Agent 继续。若实际轮次太少，记录为“长轮次证据不足”；后续另立
-更大的固定任务，不能在现有 loop 中改写 operator acceptance。
+### 可行性对结果（2026-11-14）
+
+| 样本 | 模式 | 总耗时 | provider 请求 | input / cache-read / output | 提交轮次 | changed paths | 独立终验 | Claude PID / MCP 启动 |
+| --- | --- | ---: | ---: | ---: | ---: | ---: | --- | ---: |
+| A0 | `restart` | 137.6 s | 19（HTTP 200） | 25,279 / 347,008 / 21,276 | 1 | 1 | 通过 | 1 / 1 |
+| B0 | `reuse` | 117.6 s | 19（HTTP 200） | 22,669 / 397,056 / 18,216 | 1 | 3 | 通过 | 1 / 1 |
+
+LoopForge 两组均为 `completed`、machine-backed success 且 after-phase
+命令通过。Provider 报告的费用为 `unknown`。两组只观察到一个干净会话，
+没有经过轮次边界，所以耗时差不能解释为 `reuse` 的跨轮收益；模型生成
+的代码路径数和 token 使用也不同。按预设边界，此任务未产生长轮次证据；
+在该次可行性运行时正式 A1/B1、B2/A2、A3/B3 尚未开始。可行性原始记录在
+[`experiments/results/long-run-feasibility-2026-11-14/`](../experiments/results/long-run-feasibility-2026-11-14/)。
+
+早期夹具修订中的两次试跑也保留在该目录，明确排除在上述结果之外：
+一次夹具基线误含完整实现，模型无代码改动；另一次发生在 lifecycle
+日志和 post-run 汇总修复前，provider 汇总未落盘。正式 A0/B0 均从上述
+冻结 API 桩提交的独立 clone 启动。
+
+无预算复跑不再传 `--max-rounds 30`，使用 policy 的默认 round 上限；
+也不设置 provider 输出 token 或累计 token 预算。仍保留每次 15 分钟的
+外部执行上限、64 次请求的失控保护和 180 秒单请求 watchdog。它们是
+运行安全边界，不是任务完成要求。不得人为切小工作或强迫 Agent 继续。
+若实际轮次太少，记录为“长轮次证据不足”；后续另立更大的固定任务，
+不能在现有 loop 中改写 operator acceptance。
+
+### LoopForge 4.1.0 兼容性与三对序列（2026-11-16）
+
+4.1.0 工作树的 `npm test` 为 1391/1391 通过；适配器最新 `npm test` 为
+63/63 通过。直接用旧 policy schema 10 启动 MCP 会得到
+`policy_invalid`，所以旧夹具的第一轮尝试 `A1/B1`（结果目录
+`long-run-4.1.0-2026-11-16/` 和 `...-retry1/`）排除为版本不兼容，
+没有计入正式序列。更新并冻结 schema 11 后，正式运行固定为
+LoopForge 4.1.0、Claude Code 2.1.325、Node.js 24.16.0、
+`deepseek-flash[1m]` 和夹具提交 `cf36b45`。
+
+| 样本 | 模式 | 状态 | 耗时 | provider 请求 | 提交轮次 | 独立终验 | 失败/备注 |
+| --- | --- | --- | ---: | ---: | ---: | --- | --- |
+| A1 | `restart` | 失败 | 157.9 s | 24 | 0 | 通过 | 达到 500k 输入预算 |
+| B1 | `reuse` | 完成 | 150.3 s | 19 | 1 | 通过 | 仅一轮，长轮次证据不足 |
+| B2 | `reuse` | 完成 | 168.7 s | 17 | 1 | 通过 | 仅一轮，长轮次证据不足 |
+| A2 | `restart` | 失败 | 124.0 s | 9 | 0 | 未通过 | Claude 输出超过 4096 上限，round 保持 paused |
+| A3 | `restart` | 失败 | 123.3 s | 8 | 0 | 未通过 | Claude 输出超过 4096 上限，round 保持 paused |
+| B3 | `reuse` | 失败 | 128.6 s | 8 | 0 | 未通过 | Claude 输出超过 4096 上限，round 保持 paused |
+
+正式结果原始记录在
+[`experiments/results/long-run-4.1.0-2026-11-16-v11/`](../experiments/results/long-run-4.1.0-2026-11-16-v11/)、
+[`...-pair2/`](../experiments/results/long-run-4.1.0-2026-11-16-v11-pair2/)
+和
+[`...-pair3/`](../experiments/results/long-run-4.1.0-2026-11-16-v11-pair3/)。
+每个正式 run 都确认启动 1 个 Claude 宿主和 1 个 workload MCP 服务；没有
+任何成功 run 跨越清空后的第二轮，因此不能比较 `restart` 与 `reuse` 的
+跨轮开销、状态残留或连续性。A1 的终验通过只说明模型写入了可验收代码，
+不改变 LoopForge 未提交这一事实。
+
+### 取消 provider 输出预算后的复跑（2026-11-16）
+
+`A4/B4` 已移除输出上限和累计 token 预算，但仍受旧的 45 秒单请求
+watchdog 影响；两次都在 provider 流未完成时失败，排除为 watchdog
+诊断样本。随后将长任务 watchdog 调整为 180 秒，并完全移除
+`CLAUDE_CODE_MAX_OUTPUT_TOKENS`、累计 token 检查和 `--max-rounds 30`，
+得到以下正式复跑：
+
+| 样本 | 模式 | 状态 | 耗时 | provider 请求 | 提交轮次 | 独立终验 |
+| --- | --- | --- | ---: | ---: | ---: | --- |
+| A5 | `restart` | 完成 | 164.4 s | 17 | 1 | 通过 |
+| B5 | `reuse` | 完成 | 116.5 s | 11 | 1 | 通过 |
+
+原始记录在
+[`A4/B4`](../experiments/results/long-run-4.1.0-2026-11-16-uncapped/summary.json)
+和
+[`A5/B5`](../experiments/results/long-run-4.1.0-2026-11-16-uncapped-timeout180/summary.json)。
+取消预算后两种宿主模式都能完成首轮，但仍没有任何成功运行跨越第二轮，
+所以这只能说明之前的 4096 输出限制确实是人为干扰，仍不足以比较
+`restart` 与 `reuse` 的跨轮收益。
 
 ## 记录什么
 

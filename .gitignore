@@ -8,3 +8,19 @@ dist/
 .claude/
 .DS_Store
 Thumbs.db
+
+# Experiment runs generate cloned workspaces, provider transcripts, Claude
+# configuration, and process logs. Keep only small curated evidence files.
+experiments/results/**
+!experiments/results/**/
+!experiments/results/README.md
+!experiments/results/**/summary.json
+!experiments/results/**/stable-user.json
+!experiments/results/**/native-user.json
+!experiments/results/**/stable-user.tags.ts
+!experiments/results/claude-deepseek-cache-2026-11-13.json
+experiments/results/**/workspace/**
+experiments/results/**/claude-config/**
+experiments/results/**/workspace/
+experiments/results/**/claude-config/
+experiments/live-smoke/workspace/.git-generated/

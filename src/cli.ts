@@ -1,13 +1,14 @@
 #!/usr/bin/env node
 
-import { existsSync, readFileSync, statSync } from "node:fs";
+import { appendFileSync, existsSync, readFileSync, statSync } from "node:fs";
+import { createHash } from "node:crypto";
 import { spawnSync } from "node:child_process";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { StdioMcpClient } from "./mcp/stdio-client.js";
 import { ClaudeCodeDriver } from "./hosts/claude.js";
 import { LoopForgeSupervisor } from "./supervisor.js";
-import type { InvocationHandle } from "./host/contracts.js";
+import type { HostEvent, InvocationHandle } from "./host/contracts.js";
 
 const HELP = `LoopForge Adapter
 
@@ -256,6 +257,29 @@ async function drive(
 ): Promise<number | undefined> {
   let invocation: InvocationHandle | undefined = initial;
   let exitCode: number | undefined;
+  const experimentLog = process.env.LOOPFORGE_EXPERIMENT_LIFECYCLE_LOG;
+  const driveStartedAt = performance.now();
+  const observe = (event: HostEvent, pid: number): void => {
+    if (!experimentLog) return;
+    if (event.type === "output") return;
+    const record: Record<string, unknown> = { elapsedMs: Math.round(performance.now() - driveStartedAt), type: event.type };
+    if (event.type === "started") {
+      record.pid = event.pid;
+      record.sessionHash = createHash("sha256").update(event.sessionId).digest("hex");
+    } else if (event.type === "exited") {
+      record.pid = pid;
+      record.exitCode = event.exitCode;
+    } else if (event.type === "stopping" || event.type === "turn_ended") {
+      record.pid = pid;
+      record.reason = event.reason;
+    } else if (event.type === "diagnostic") {
+      record.category = event.message.includes("Reused Claude process") ? "session_reused"
+        : event.message.includes("restarting the host") ? "host_restart_fallback" : "other";
+    } else if (event.type === "failed") {
+      record.pid = pid;
+    }
+    appendFileSync(experimentLog, `${JSON.stringify(record)}\n`, "utf8");
+  };
   const wasRaw = Boolean(process.stdin.isTTY && process.stdin.isRaw);
   if (process.stdin.isTTY) process.stdin.setRawMode(true);
   const forwardInput = (chunk: Buffer | string) => {
@@ -271,6 +295,7 @@ async function drive(
   try {
     invocations: while (invocation) {
       for await (const event of invocation) {
+        observe(event, invocation.pid);
         if (event.type === "output") process.stdout.write(event.data);
         if (event.type === "diagnostic") process.stderr.write(`[LoopForge Adapter] ${event.message}\n`);
         if (event.type === "exited") exitCode = event.exitCode;

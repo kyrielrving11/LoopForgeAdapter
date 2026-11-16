@@ -12,7 +12,8 @@
 - [Claude 任务可靠性诊断](./CLAUDE-RELIABILITY.zh-CN.md)：
   记录未提交即结束、MCP 参数错误和真实模型错误恢复的证据。
 - [长任务对照实验方案](./LONG-RUN-EVALUATION.zh-CN.md)：
-  尚未执行的后续评估方案，不是实验结论。
+  记录 LoopForge 4.1.0 兼容性回归、夹具重冻结和三对真实运行结果；
+  结果仍不足以支持宿主复用或连续性结论。
 
 原始结构化记录保存在 [`experiments/results/`](../experiments/results/)。
 实验转发器、任务夹具和结果采集代码位于 [`experiments/`](../experiments/)。
