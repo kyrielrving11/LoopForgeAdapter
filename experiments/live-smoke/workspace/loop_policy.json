@@ -1,0 +1,19 @@
+{
+  "version": "10",
+  "evidence": {
+    "providers": ["git"],
+    "commands": [
+      {
+        "name": "acceptance",
+        "enabled": true,
+        "executable": "node",
+        "args": ["scripts/acceptance.cjs"],
+        "phase": "after",
+        "required": true,
+        "timeout_ms": 30000,
+        "max_output_chars": 20000,
+        "success_exit_codes": [0]
+      }
+    ]
+  }
+}

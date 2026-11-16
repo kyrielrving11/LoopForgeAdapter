@@ -1,0 +1,100 @@
+{
+  "measuredAt": "2026-11-14",
+  "status": "completed",
+  "objective": "Real Claude Code + LoopForge two-round coding pilot with one recoverable MCP error",
+  "environment": {
+    "platform": "Windows",
+    "node": "24.16.0",
+    "claudeCode": "2.1.323",
+    "loopforge": "4.0.8",
+    "configuredModel": "deepseek-flash[1m]",
+    "providerReportedModel": "deepseek-flash",
+    "provider": "https://api.deepseek.com/anthropic",
+    "runtimeMode": "reuse",
+    "fixtureCommit": "41466c9169f95e372d8f5b8f8f249476b8c158be"
+  },
+  "attempts": [
+    {
+      "attempt": 1,
+      "status": "failed-before-provider-response",
+      "detail": "The relay's initial 1024-token request guard rejected the native request.",
+      "loopId": "2dc519a6-8567-4f08-86ee-7c9db7508878",
+      "roundsCommitted": 0,
+      "loopState": "paused"
+    },
+    {
+      "attempt": 2,
+      "status": "timeout",
+      "timeoutMs": 180000,
+      "detail": "No provider measurement or workload-tool call was retained by the initial runner.",
+      "loopId": "14cf7398-00cf-4764-97ae-c13ba34b0678",
+      "roundsCommitted": 0,
+      "loopState": "paused"
+    },
+    {
+      "attempt": 3,
+      "status": "manually-interrupted",
+      "detail": "An old runner was started inadvertently and interrupted after the diagnostic change; its workload service only started.",
+      "loopId": "189f9df9-1b66-45a3-a280-bfee277a112e",
+      "roundsCommitted": 0,
+      "loopState": "paused"
+    },
+    {
+      "attempt": 4,
+      "status": "request-budget-exhausted",
+      "requestLimit": 24,
+      "successfulProviderResponses": 24,
+      "detail": "The model attempted shell-oriented exploration, repeated submissions, and hit max_tokens truncation at 1024 output tokens. No round committed.",
+      "loopId": "4df71c39-a8ea-457a-a2b8-cdcb60e7c675",
+      "roundsCommitted": 0,
+      "loopState": "paused",
+      "providerSummary": "./pilot4/provider-summary.json"
+    },
+    {
+      "attempt": 5,
+      "status": "passed",
+      "loopId": "c905b6b8-4f1e-484c-be33-5a446476ddaf",
+      "requestLimit": 24,
+      "outputTokenLimit": 4096,
+      "providerRequests": 19,
+      "providerStatuses": [200],
+      "providerElapsedMs": 32845,
+      "usage": {
+        "inputTokens": 27759,
+        "cacheReadInputTokens": 179584,
+        "cacheCreationInputTokens": 0,
+        "outputTokens": 4204,
+        "cost": "unknown"
+      },
+      "rounds": [
+        {
+          "round": 1,
+          "outcome": "partial",
+          "afterAcceptance": "passed",
+          "loopforgeAction": "continue",
+          "machineBackedSuccess": false
+        },
+        {
+          "round": 2,
+          "outcome": "success",
+          "afterAcceptance": "passed",
+          "loopforgeAction": "stop",
+          "stopReason": "completed",
+          "machineBackedSuccess": true,
+          "contract": "verified",
+          "verifiedContractItems": 2
+        }
+      ],
+      "recoverableInjectedError": "recovered",
+      "finalIndependentAcceptance": "passed",
+      "sourceSha256": "4ce3c7cc94c11b353dddc9f17ccf96845b3c0e7647c426598eb68c6cc887f97e",
+      "providerSummary": "./pilot5/provider-summary.json",
+      "serviceEvents": "./pilot5/service-events.jsonl"
+    }
+  ],
+  "successfulPilotWorkspace": "%TEMP%/loopforge-live-pilot5-f0d99d8414c740f1a50f59354e766d85/workspace",
+  "successfulPilotFixtureCommit": "41466c9169f95e372d8f5b8f8f249476b8c158be",
+  "successfulPilotWorkspaceChanges": ["src/tags.ts"],
+  "acceptanceScriptsAndPolicyChanged": false,
+  "conclusion": "The real end-to-end path completed: LoopForge committed two rounds, the injected MCP error was recovered, both after-phase acceptance checks passed, the final contract was machine-verified, and an independent final acceptance passed. Earlier failed attempts remain recorded and their loops were paused."
+}

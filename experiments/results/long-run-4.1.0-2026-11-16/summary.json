@@ -1,0 +1,39 @@
+{
+  "measuredAt": "2026-11-16T02:17:21.492Z",
+  "status": "contains-failures",
+  "fixtureCommit": "f1ba827e566037ae01b056bdcfa9253920f2a139",
+  "taskSha256": "48410e5cdac11b1c5ddc02e626a649ae940506d1cbf12c6c73ddce35b7ca7fb3",
+  "sequence": [
+    "A1",
+    "B1"
+  ],
+  "budgets": {
+    "executionMs": 900000,
+    "requestsPerRun": 64,
+    "outputTokensPerRequest": 4096,
+    "measuredInputTokensPerRun": 500000,
+    "outputTokensPerRun": 32768,
+    "providerCostUsd": "unknown"
+  },
+  "results": [
+    {
+      "id": "A1",
+      "mode": "restart",
+      "status": "failed",
+      "elapsedMs": 3721,
+      "requests": 0,
+      "rounds": null,
+      "finalAcceptance": false
+    },
+    {
+      "id": "B1",
+      "mode": "reuse",
+      "status": "failed",
+      "elapsedMs": 3005,
+      "requests": 0,
+      "rounds": null,
+      "finalAcceptance": false
+    }
+  ],
+  "conclusion": "Feasibility pair only; do not infer statistical significance or treat this pair as the three paired comparison samples."
+}

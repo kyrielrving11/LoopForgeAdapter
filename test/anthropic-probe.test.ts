@@ -48,15 +48,34 @@ test("experimental relay changes only provider user identity and records final c
 
 test("experimental relay refuses requests over the output limit before any provider call", async () => {
   let inspected = false;
+  const failures: ProbeMeasurement[] = [];
   const relay = await startAnthropicProbe({ maximumRequests: 1, maximumOutputTokens: 64,
     inspect() { inspected = true; }, measured() { throw new Error("No response should be measured"); },
+    onFailure(measurement) { failures.push(measurement); },
   });
   try {
     const request = fetch(relay.url + "/v1/messages", { method: "POST", headers: { "content-type": "application/json" },
       body: JSON.stringify({ model: "probe", max_tokens: 65, messages: [] }) });
     void request.catch(() => undefined);
-    await assert.rejects(relay.failed, /Experiment request failed/);
+    await assert.rejects(relay.failed, /Request output-token limit exceeded/);
     await assert.rejects(request);
     assert.equal(inspected, false);
+    assert.equal(failures.length, 1);
+    assert.equal(failures[0]?.status, 0);
+    assert.equal(failures[0]?.complete, false);
+  } finally { await relay.close(); }
+});
+
+test("experimental relay leaves output tokens uncapped when no limit is configured", async () => {
+  let inspected: ProbeRequest | undefined;
+  const relay = await startAnthropicProbe({ maximumRequests: 1,
+    inspect(input) { inspected = input; }, measured() {},
+    localReply() { return { text: "uncapped" }; },
+  });
+  try {
+    const response = await fetch(relay.url + "/v1/messages", { method: "POST", headers: { "content-type": "application/json" },
+      body: JSON.stringify({ model: "probe", max_tokens: 128000, messages: [] }) });
+    assert.equal(response.status, 200);
+    assert.equal(inspected?.max_tokens, 128000);
   } finally { await relay.close(); }
 });
