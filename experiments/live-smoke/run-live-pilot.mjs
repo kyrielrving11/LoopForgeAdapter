@@ -9,8 +9,9 @@ import { startAnthropicProbe } from '../../dist/experiments/anthropic-probe.js';
 const execFileAsync = promisify(execFile);
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 const adapterCli = path.join(root, 'dist/src/cli.js');
-const maxRequests = 24;
-const runTimeoutMs = 180_000;
+const maxRequests = 64;
+const requestTimeoutMs = 180_000;
+const runTimeoutMs = 15 * 60 * 1000;
 
 function parseArgs(args) {
   const result = {};
@@ -67,25 +68,28 @@ async function main() {
   const relay = await startAnthropicProbe({
     upstream,
     maximumRequests: maxRequests,
+    requestTimeoutMs,
     inspect(input) { requestedModels.add(input.model); },
     measured(measurement) { measurements.push(measurement); },
     onFailure(measurement) { measurements.push(measurement); },
   });
 
   const task = [
-    'Implement this task in exactly two LoopForge rounds.',
-    'Round 1: implement only normalizeTag(input: string): string. Apply NFC normalization, trim leading/trailing whitespace, lowercase, and collapse internal whitespace to one ASCII space. Use Read, Write or Edit and the configured MCP tools only; do not use Bash, shell, subagents or background execution.',
-    'Run fixture with round=0 and check with round=0. The first check returns one intentional recoverable MCP error without running the command; retry that check in the same round. Then submit a partial evaluation and continue.',
-    'Round 2, after LoopForge returns a fresh invocation: preserve normalizeTag and add uniqueTags(inputs: readonly string[]): string[]. Normalize each value, drop empty values, deduplicate while preserving first-seen order, and never mutate the input. Run fixture and check with round=1, then complete only after both exports pass.',
+    'Implement normalizeTag(input: string): string and uniqueTags(inputs: readonly string[]): string[] in src/tags.ts. Use two logical phases and submit the first completed phase as a partial LoopForge evaluation, then continue after LoopForge delivers a fresh invocation. The first phase implements normalizeTag; the second preserves it and adds uniqueTags.',
+    'normalizeTag applies NFC normalization, trims leading/trailing whitespace, lowercases, and collapses internal whitespace to one ASCII space. uniqueTags normalizes each value, drops empty values, deduplicates while preserving first-seen order, and never mutates the input.',
+    'Use Read, Write or Edit and the configured MCP tools only; do not use Bash, shell, subagents or background execution. Call fixture and check with round=0 in the first phase, then round=1 after the fresh invocation. Before each submission run the configured acceptance check and fix any reported failure. Complete only after both exports pass.',
     'Never edit scripts, loop_policy.json, or static capability references. Use the current LoopForge prompt and live tool schemas as authoritative. Do not claim an unrun check passed.',
   ].join('\n\n');
 
+  const runtime = options.runtime ?? 'reuse';
+  assert.ok(runtime === 'restart' || runtime === 'reuse', '--runtime must be restart or reuse');
+  const lifecycleLog = path.resolve(options['lifecycle-log'] ?? `${options.output}.host-lifecycle.jsonl`);
   const args = [
     adapterCli, 'start', '--workspace', workspace,
     '--loopforge-cli', path.resolve(options['loopforge-cli']),
     '--mcp-config', path.resolve(options['mcp-config']),
     '--capability-file', path.resolve(options['capability-file']),
-    '--claude-runtime', 'reuse', '--max-rounds', '2', '--task', task,
+    '--claude-runtime', runtime, '--task', task,
     '--criterion', 'normalizeTag passes the frozen Unicode, trimming, case, whitespace, and empty-input checks.',
     '--criterion', 'uniqueTags passes the frozen ordering, normalization, empty-value, deduplication, and no-mutation checks.',
     '--constraint', 'Do not modify the acceptance scripts, LoopForge policy, or static capability reference.',
@@ -102,6 +106,7 @@ async function main() {
       ...inheritedEnv,
       NODE_OPTIONS: nodeOptions,
       LOOPFORGE_EXPERIMENT_CLAUDE_ARGS: JSON.stringify(allowlist),
+      LOOPFORGE_EXPERIMENT_LIFECYCLE_LOG: lifecycleLog,
       ANTHROPIC_BASE_URL: relay.url,
       CLAUDE_CONFIG_DIR: claudeConfig,
       MAX_THINKING_TOKENS: '0',
@@ -125,7 +130,7 @@ async function main() {
   try {
     const outcome = await Promise.race([
       exited,
-      new Promise((_, reject) => { timer = setTimeout(() => reject(new Error('Pilot exceeded its 180-second limit')), runTimeoutMs); }),
+      new Promise((_, reject) => { timer = setTimeout(() => reject(new Error('Pilot exceeded its 15-minute execution limit')), runTimeoutMs); }),
       relay.failed,
     ]);
     if (outcome?.code !== 0) throw new Error(`Adapter exited with code ${outcome?.code ?? 'unknown'}${outcome?.signal ? ` (${outcome.signal})` : ''}`);
@@ -151,7 +156,8 @@ async function main() {
     provider: `${upstream.protocol}//${upstream.host}${upstream.pathname}`,
     model: process.env.ANTHROPIC_MODEL, requestedModels: [...requestedModels],
     loopforgeVersion, claudeVersion: '2.1.325', nodeVersion: process.version,
-    runtimeMode: 'reuse', requestLimit: maxRequests, outputTokenLimit: null,
+    runtimeMode: runtime, requestLimit: maxRequests, requestTimeoutMs, executionTimeoutMs: runTimeoutMs,
+    outputTokenLimit: null, lifecycleLog,
     requestCount: measurements.length, statusCodes: measurements.map((item) => item.status),
     stopReasons: measurements.map((item) => item.stopReason), toolNames: measurements.flatMap((item) => item.toolNames),
     elapsedMs: measurements.reduce((sum, item) => sum + item.elapsedMs, 0), usage: usageOf(measurements),

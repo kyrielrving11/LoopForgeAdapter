@@ -1,0 +1,140 @@
+{
+  "schemaVersion": 1,
+  "measuredAt": "2026-11-16T07:15:40.016Z",
+  "objective": "Current-version real-host acceptance across one LoopForge fresh-invocation boundary",
+  "environment": {
+    "platform": "Windows",
+    "terminal": "node-pty with ConPTY",
+    "node": "24.16.0",
+    "claudeCode": "2.1.325",
+    "loopforge": "4.1.0",
+    "adapterCommit": "a2e7ec278e219ed6f50cdffcd8d8f5a11f8c5a92",
+    "adapterWorkingTreeChanges": [
+      "experiments/live-smoke/run-live-pilot.mjs",
+      "experiments/live-smoke/workspace/loop_policy.json"
+    ],
+    "provider": "https://api.deepseek.com/anthropic",
+    "configuredModel": "deepseek-flash[1m]",
+    "providerReportedModel": "deepseek-flash",
+    "providerCost": "unknown"
+  },
+  "fixture": {
+    "source": "experiments/live-smoke/workspace",
+    "policySchema": 11,
+    "independentBaselineCommit": "c612b4a3b86d4a8ede57202c43eb5f9aafd5d14f",
+    "taskSha256": "492bdebfe2e371b04b62ee248519fa60665f1d70a0374db586864cd29cf4d987",
+    "runsUsedSeparateWorkspaceAndClaudeConfig": true,
+    "policyAndAcceptanceScriptsChangedDuringRuns": false,
+    "taskShape": "Two logical implementation phases with one fresh invocation between them; no --max-rounds override"
+  },
+  "experimentControls": {
+    "outputTokenLimit": null,
+    "measuredTokenBudget": null,
+    "maxRequestsPerRun": 64,
+    "requestTimeoutMs": 180000,
+    "executionTimeoutMs": 900000,
+    "recoverableMcpFaultInjected": false,
+    "note": "Request and execution limits are hang protection only; they are not completion criteria."
+  },
+  "results": [
+    {
+      "mode": "restart",
+      "loopId": "9885eba6-ec9b-428b-a71b-06c4f8fb7fae",
+      "status": "completed",
+      "rounds": [
+        {
+          "round": 1,
+          "action": "continue",
+          "context": "fresh_invocation:first_round",
+          "afterAcceptance": "passed",
+          "machineBackedSuccess": false
+        },
+        {
+          "round": 2,
+          "action": "stop",
+          "stopReason": "completed",
+          "context": "fresh_invocation:next_round",
+          "afterAcceptance": "passed",
+          "machineBackedSuccess": true
+        }
+      ],
+      "finalIndependentAcceptance": "passed",
+      "provider": {
+        "requests": 16,
+        "allStatusCodes200": true,
+        "elapsedMs": 25698,
+        "inputTokens": 26927,
+        "cacheReadInputTokens": 142208,
+        "outputTokens": 3033
+      },
+      "host": {
+        "confirmedSessionStarts": 2,
+        "distinctClaudeProcesses": 2,
+        "reuseConfirmations": 0,
+        "lifecycleMs": 38347
+      },
+      "workloadMcp": {
+        "starts": 2,
+        "checks": [
+          { "round": 0, "passed": true },
+          { "round": 1, "passed": true }
+        ]
+      },
+      "changedFiles": ["src/tags.ts"],
+      "loopforgeWarnings": ["criteria_claims_unverified"]
+    },
+    {
+      "mode": "reuse",
+      "loopId": "221ba498-bfc9-4784-a718-6ebe0a1f22c0",
+      "status": "completed",
+      "rounds": [
+        {
+          "round": 1,
+          "action": "continue",
+          "context": "fresh_invocation:first_round",
+          "afterAcceptance": "passed",
+          "machineBackedSuccess": false
+        },
+        {
+          "round": 2,
+          "action": "stop",
+          "stopReason": "completed",
+          "context": "fresh_invocation:next_round",
+          "afterAcceptance": "passed",
+          "machineBackedSuccess": true
+        }
+      ],
+      "finalIndependentAcceptance": "passed",
+      "provider": {
+        "requests": 16,
+        "allStatusCodes200": true,
+        "elapsedMs": 28081,
+        "inputTokens": 27346,
+        "cacheReadInputTokens": 146176,
+        "outputTokens": 3657
+      },
+      "host": {
+        "confirmedSessionStarts": 2,
+        "distinctClaudeProcesses": 1,
+        "reuseConfirmations": 1,
+        "lifecycleMs": 37792
+      },
+      "workloadMcp": {
+        "starts": 1,
+        "checks": [
+          { "round": 0, "passed": true },
+          { "round": 1, "passed": true }
+        ]
+      },
+      "changedFiles": ["src/tags.ts"],
+      "loopforgeWarnings": ["criteria_claims_unverified"]
+    }
+  ],
+  "conclusion": "Both modes passed a real two-round LoopForge 4.1.0 task and independent final acceptance. Restart created a new Claude process and workload MCP service for round 2. Reuse confirmed a new native session while keeping the Claude process and workload MCP service. This validates the Windows host lifecycle path, not public benchmark task-solving performance or statistical differences.",
+  "limitations": [
+    "One run per mode is a smoke acceptance, not a benchmark sample.",
+    "The recoverable MCP-error path was not injected in this run.",
+    "LoopForge retained a non-blocking criteria_claims_unverified warning even though the configured acceptance commands and independent final acceptance passed.",
+    "Provider cost was unavailable; cache-read token counts are reported as received and are not interpreted as confirmed savings."
+  ]
+}

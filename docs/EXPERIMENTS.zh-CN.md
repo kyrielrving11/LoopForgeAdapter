@@ -14,6 +14,9 @@
 - [长任务对照实验方案](./LONG-RUN-EVALUATION.zh-CN.md)：
   记录 LoopForge 4.1.0 兼容性回归、夹具重冻结和三对真实运行结果；
   结果仍不足以支持宿主复用或连续性结论。
+- [当前版本真实宿主验收](../experiments/results/live-acceptance-2026-11-16/summary.json)：
+  Windows、Claude Code 2.1.325 和 LoopForge 4.1.0 下的两轮 `restart/reuse`
+  对照，确认一次 fresh invocation 边界和独立验收路径。
 
 原始结构化记录保存在 [`experiments/results/`](../experiments/results/)。
 实验转发器、任务夹具和结果采集代码位于 [`experiments/`](../experiments/)。

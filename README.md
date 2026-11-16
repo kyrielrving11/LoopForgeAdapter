@@ -100,7 +100,7 @@ scripted API endpoint, without a live provider key.
 - [Architecture and source map](./docs/ARCHITECTURE.md)
 - [Host integration and support boundary](./docs/HOST-INTEGRATION.md)
 - [Contribution and release checks](./docs/RELEASE-CHECKLIST.md)
-- [Long-task comparison plan (中文, not yet executed)](./docs/LONG-RUN-EVALUATION.zh-CN.md)
+- [Long-task comparison and results (Chinese)](./docs/LONG-RUN-EVALUATION.zh-CN.md)
 - [Experimental evidence index (中文; historical runs, not current-version guarantees)](./docs/EXPERIMENTS.zh-CN.md)
 
 MIT licensed; see [LICENSE](./LICENSE).
